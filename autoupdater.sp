@@ -1,3 +1,6 @@
+#pragma semicolon 1
+#pragma newdecls required
+
 #include <cg_core>
 #include <system2>
 
@@ -15,10 +18,10 @@ public Plugin myinfo =
     name        = "[CG] - Auto Updater",
     author      = "Kyle",
     description = "an auto update system",
-    version     = "1.9",
+    version     = "1.9.<commit_count>.<commit_branch> - <commit_date>",
     url         = "http://steamcommunity.com/id/_xQy_/"
 };
- 
+
 void OnDatabaseAvailable()
 {
     if(testServer)
