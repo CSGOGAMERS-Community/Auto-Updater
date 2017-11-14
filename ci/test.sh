@@ -31,7 +31,7 @@ wget "https://github.com/Kxnrl/Core/raw/master/include/cg_core.inc" -q -O includ
 
 
 #下载System2头文件
-echo -e "Download fpvm_interface.inc ..."
+echo -e "Download system2.inc ..."
 wget "https://github.com/dordnung/System2/raw/master/system2.inc" -q -O include/system2.inc
 
 
@@ -67,7 +67,6 @@ mkdir build
 
 
 #编译
-echo -e "Compiling store core [ttt] *CG* ..."
 cp autoupdater.sp addons/sourcemod/scripting
 addons/sourcemod/scripting/spcomp -E -v0 addons/sourcemod/scripting/autoupdater.sp -o"build/autoupdater.smx"
 if [ ! -f "build/autoupdater.smx" ]; then

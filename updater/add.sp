@@ -84,7 +84,7 @@ public void SQLCallback_GetAddMap(Handle owner, Handle hndl, const char[] error,
     }
 
     // SQL fetch row
-    char map[128]
+    char map[128];
     SQL_FetchString(hndl, 1, serverType, 4);
     SQL_FetchString(hndl, 2, map, 128);
     SQL_FetchString(hndl, 3, downloadUrl, 256);
@@ -516,7 +516,7 @@ void InsertToDataBase()
 
 void LogFileEx(const char[] buffer, any ...)
 {
-    char fmt[256]
+    char fmt[256];
     VFormat(fmt, 256, buffer, 2);
     LogToFileEx("addons/sourcemod/data/addmap.txt", fmt);
 }
