@@ -1,0 +1,4 @@
+void SMX_OnAllPluginLoaded()
+{
+    
+}
