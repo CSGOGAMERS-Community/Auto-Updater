@@ -90,4 +90,4 @@ cd build
 
 #上传
 echo -e "Upload file ..."
-lftp -c "open -u $FTP_USER,$FTP_PSWD $FTP_HOST; put -O /Updater/$5/$1/ $FILE"
+lftp -c "open -u $FTP_USER,$FTP_PSWD $FTP_HOST; put -O /Updater/$1/ $FILE"
