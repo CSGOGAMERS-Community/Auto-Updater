@@ -35,7 +35,7 @@ static char smxShort[ePlugin][16] =
     "Store",
     "MCER",
     "Unknown"
-}
+};
 
 void SMX_OnAllPluginLoaded()
 {
