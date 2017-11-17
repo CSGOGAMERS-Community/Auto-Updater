@@ -45,7 +45,7 @@ static char smxFile[ePlugin][16] =
     "store.smx",
     "mapchooser_extended.smx",
     ""
-}
+};
 
 void SMX_OnAllPluginLoaded()
 {
