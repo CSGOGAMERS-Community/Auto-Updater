@@ -33,12 +33,43 @@ public void SQLCallback_CheckMap(Handle owner, Handle hndl, const char[] error, 
         PushArrayString(array_mapmysql, map);
     }
     
-    if(startCheck == 0)
+    if(GetArraySize(array_mapmysql) <= 0)
+        InsertMapsToDatabase();
+    else if(startCheck == 0)
         CheckMapsOnStart(array_mapmysql);
     else
         CheckMapsOnDelete(array_mapmysql, startCheck);
 
     delete array_mapmysql;
+}
+
+void InsertMapsToDatabase()
+{
+    Handle hDirectory;
+    if((hDirectory = OpenDirectory("maps")) != INVALID_HANDLE)
+    {
+        FileType type = FileType_Unknown;
+        char filename[128];
+        while(ReadDirEntry(hDirectory, filename, 128, type))
+        {
+            if(type != FileType_File)
+                continue;
+            
+            TrimString(filename);
+
+            if(StrContains(filename, ".bsp", false) == -1)
+                continue;
+            
+            ReplaceString(filename, ".bsp", "", false);
+
+            char m_szMap[128], m_szQuery[256];
+            SQL_EscapeString(g_hDatabase, filename, m_szMap, 128);
+            FormatEx(m_szQuery, 256, "INSERT INTO map_database VALUES ('%s', '%s');", g_szMod, m_szMap);
+            CG_DatabaseSaveGames(m_szQuery);
+            LogMessage("Insert %s to database.", filename);
+        }
+        CloseHandle(hDirectory);
+    }
 }
 
 void CheckMapsOnStart(ArrayList array_mapmysql)
@@ -81,16 +112,7 @@ void CheckMapsOnStart(ArrayList array_mapmysql)
 
 public Action Timer_ChangeMap(Handle timer)
 {
-    switch(CG_GetServerId())
-    {
-        case 1, 2, 3, 4: ForceChangeLevel("ze_", "restart");
-        case 5, 6      : ForceChangeLevel("tt_", "restart");
-        case 7         : ForceChangeLevel("mg_", "restart");
-        case 8, 9      : ForceChangeLevel("jb_", "restart");
-        case 11        : ForceChangeLevel("hg_", "restart");
-        case 12        : ForceChangeLevel("ds_", "restart");
-        case 15, 16    : ForceChangeLevel("kz_", "restart");
-    }
+    ForceChangeLevel(g_szMod, "restart map");
     return Plugin_Stop;
 }
 
@@ -253,6 +275,9 @@ public Action Command_UpdateMap(int client, int args)
 
 public Action Command_DeleteMap(int client, int args)
 {
+    if(!client)
+        return Plugin_Handled;
+    
     char auth[32];
     GetClientAuthId(client, AuthId_Steam2, auth, 32, true);
     
@@ -264,16 +289,9 @@ public Action Command_DeleteMap(int client, int args)
     if(GetAdminImmunityLevel(admin) < 50)
         return Plugin_Handled;
 
-    switch(CG_GetServerId())
-    {
-        case 1, 2, 3, 4 : SQL_TQuery(g_hDatabase, SQLCallback_CheckMap, "SELECT `map` FROM map_database WHERE `mod` = 'ze'", client);
-        case 5, 6       : SQL_TQuery(g_hDatabase, SQLCallback_CheckMap, "SELECT `map` FROM map_database WHERE `mod` = 'tt'", client);
-        case 7          : SQL_TQuery(g_hDatabase, SQLCallback_CheckMap, "SELECT `map` FROM map_database WHERE `mod` = 'mg'", client);
-        case 8, 9       : SQL_TQuery(g_hDatabase, SQLCallback_CheckMap, "SELECT `map` FROM map_database WHERE `mod` = 'jb'", client);
-        case 11         : SQL_TQuery(g_hDatabase, SQLCallback_CheckMap, "SELECT `map` FROM map_database WHERE `mod` = 'hg'", client);
-        case 12         : SQL_TQuery(g_hDatabase, SQLCallback_CheckMap, "SELECT `map` FROM map_database WHERE `mod` = 'ds'", client);
-        case 15,16,19,20: SQL_TQuery(g_hDatabase, SQLCallback_CheckMap, "SELECT `map` FROM map_database WHERE `mod` = 'kz'", client);
-    }
+    char m_szQuery[128];
+    FormatEx(m_szQuery, 128, "SELECT `map` FROM map_database WHERE `mod` = '%s'", g_szMod);
+    SQL_TQuery(g_hDatabase, SQLCallback_CheckMap, m_szQuery, client);
 
     return Plugin_Handled;
 }

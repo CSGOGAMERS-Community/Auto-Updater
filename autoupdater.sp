@@ -6,6 +6,7 @@
 
 Handle g_hDatabase;
 bool testServer;
+char g_szMod[16];
 
 #include "updater/cfg.sp"   //自动更新cfg和翻译
 #include "updater/map.sp"   //自动添加地图到服务器
@@ -31,21 +32,21 @@ void OnDatabaseAvailable()
 
     switch(CG_GetServerId())
     {
-        case 1 : SQL_TQuery(g_hDatabase, SQLCallback_CheckMap, "SELECT `map` FROM map_database WHERE `mod` = 'ze'", 0);
-        case 2 : SQL_TQuery(g_hDatabase, SQLCallback_CheckMap, "SELECT `map` FROM map_database WHERE `mod` = 'ze'", 0);
-        case 3 : SQL_TQuery(g_hDatabase, SQLCallback_CheckMap, "SELECT `map` FROM map_database WHERE `mod` = 'ze'", 0);
-        case 4 : SQL_TQuery(g_hDatabase, SQLCallback_CheckMap, "SELECT `map` FROM map_database WHERE `mod` = 'ze'", 0);
-        case 5 : SQL_TQuery(g_hDatabase, SQLCallback_CheckMap, "SELECT `map` FROM map_database WHERE `mod` = 'tt'", 0);
-        case 6 : SQL_TQuery(g_hDatabase, SQLCallback_CheckMap, "SELECT `map` FROM map_database WHERE `mod` = 'tt'", 0);
-        case 7 : SQL_TQuery(g_hDatabase, SQLCallback_CheckMap, "SELECT `map` FROM map_database WHERE `mod` = 'mg'", 0);
-        case 8 : SQL_TQuery(g_hDatabase, SQLCallback_CheckMap, "SELECT `map` FROM map_database WHERE `mod` = 'jb'", 0);
-        case 9 : SQL_TQuery(g_hDatabase, SQLCallback_CheckMap, "SELECT `map` FROM map_database WHERE `mod` = 'jb'", 0);
-        case 11: SQL_TQuery(g_hDatabase, SQLCallback_CheckMap, "SELECT `map` FROM map_database WHERE `mod` = 'hg'", 0);
-        case 12: SQL_TQuery(g_hDatabase, SQLCallback_CheckMap, "SELECT `map` FROM map_database WHERE `mod` = 'ds'", 0);
-        case 15: SQL_TQuery(g_hDatabase, SQLCallback_CheckMap, "SELECT `map` FROM map_database WHERE `mod` = 'kz'", 0);
-        case 16: SQL_TQuery(g_hDatabase, SQLCallback_CheckMap, "SELECT `map` FROM map_database WHERE `mod` = 'kz'", 0);
-        case 19: SQL_TQuery(g_hDatabase, SQLCallback_CheckMap, "SELECT `map` FROM map_database WHERE `mod` = 'kz'", 0);
-        case 20: SQL_TQuery(g_hDatabase, SQLCallback_CheckMap, "SELECT `map` FROM map_database WHERE `mod` = 'kz'", 0);
+        case 1 : strcopy(g_szMod, 16, "ze", 0);
+        case 2 : strcopy(g_szMod, 16, "ze", 0);
+        case 3 : strcopy(g_szMod, 16, "ze", 0);
+        case 4 : strcopy(g_szMod, 16, "ze", 0);
+        case 5 : strcopy(g_szMod, 16, "tt", 0);
+        case 6 : strcopy(g_szMod, 16, "tt", 0);
+        case 7 : strcopy(g_szMod, 16, "mg", 0);
+        case 8 : strcopy(g_szMod, 16, "jb", 0);
+        case 9 : strcopy(g_szMod, 16, "jb", 0);
+        case 11: strcopy(g_szMod, 16, "hg", 0);
+        case 12: strcopy(g_szMod, 16, "ds", 0);
+        case 15: strcopy(g_szMod, 16, "kz", 0);
+        case 16: strcopy(g_szMod, 16, "kz", 0);
+        case 19: strcopy(g_szMod, 16, "kz", 0);
+        case 20: strcopy(g_szMod, 16, "kz", 0);
         default:
         {
             char m_szPath[128];
@@ -53,7 +54,12 @@ void OnDatabaseAvailable()
             if(!FileExists(m_szPath) || !DeleteFile(m_szPath))
                 LogError("Delete autoupdater.smx failed.");
             ServerCommand("sm plugins unload autoupdater.smx");
+            return;
         }
+        
+        char m_szQuery[128];
+        FormatEx(m_szQuery, 128, "SELECT `map` FROM map_database WHERE `mod` = '%s'", g_szMod);
+        SQL_TQuery(g_hDatabase, SQLCallback_CheckMap, m_szQuery, 0);
     }
     
     SMX_OnDatabaseAvailable();
