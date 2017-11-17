@@ -18,7 +18,8 @@ public void SQLCallback_CheckMap(Handle owner, Handle hndl, const char[] error, 
     
     if(SQL_GetRowCount(hndl) < 1)
     {
-        LogError("Can not get map list from database!");
+        LogMessage("Can not get map list from database! Now inserting!");
+        InsertMapsToDatabase();
         return;
     }
 
@@ -33,9 +34,7 @@ public void SQLCallback_CheckMap(Handle owner, Handle hndl, const char[] error, 
         PushArrayString(array_mapmysql, map);
     }
     
-    if(GetArraySize(array_mapmysql) <= 0)
-        InsertMapsToDatabase();
-    else if(startCheck == 0)
+    if(startCheck == 0)
         CheckMapsOnStart(array_mapmysql);
     else
         CheckMapsOnDelete(array_mapmysql, startCheck);
