@@ -111,8 +111,8 @@ public void SMX_OnDownloadSmxCompleted(bool finished, const char[] error, float 
                 Success = true;
                 DeleteFile(smxPath[plugin]);
                 RenameFile(smxPath[plugin], smxDLPath[plugin]);
-                DeleteFile(smxDLPath[plugin]);
             }
+            DeleteFile(smxDLPath[plugin]);
         }
         currentSmx--;
     }
