@@ -91,3 +91,10 @@ cd build
 #上传
 echo -e "Upload file ..."
 lftp -c "open -u $FTP_USER,$FTP_PSWD $FTP_HOST; put -O /Updater/$1/ $FILE"
+
+
+#RAW
+if [ "$1" = "1.8" ]; then
+    echo "Upload RAW..."
+    lftp -c "open -u $FTP_USER,$FTP_PSWD $FTP_HOST; put -O /Updater/Raw/ autoupdater.smx"
+fi
