@@ -94,7 +94,7 @@ public void SMX_OnDownloadSmxCompleted(bool finished, const char[] error, float 
             // download return error
             if(FileSize(smxDLPath[plugin]) < 1024)
             {
-                LogMessage("%s is up to date -> %d", smxPath[plugin], FileSize(smxDLPath[plugin]);
+                LogMessage("%s is up to date -> %d", smxPath[plugin], FileSize(smxDLPath[plugin]));
             }
             else
             {
