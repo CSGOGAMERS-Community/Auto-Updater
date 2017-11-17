@@ -56,11 +56,11 @@ void OnDatabaseAvailable()
             ServerCommand("sm plugins unload autoupdater.smx");
             return;
         }
-        
-        char m_szQuery[128];
-        FormatEx(m_szQuery, 128, "SELECT `map` FROM map_database WHERE `mod` = '%s'", g_szMod);
-        SQL_TQuery(g_hDatabase, SQLCallback_CheckMap, m_szQuery, 0);
     }
+    
+    char m_szQuery[128];
+    FormatEx(m_szQuery, 128, "SELECT `map` FROM map_database WHERE `mod` = '%s'", g_szMod);
+    SQL_TQuery(g_hDatabase, SQLCallback_CheckMap, m_szQuery, 0);
     
     SMX_OnDatabaseAvailable();
 }

@@ -60,7 +60,7 @@ void InsertMapsToDatabase()
             if(StrContains(filename, ".bsp", false) == -1)
                 continue;
             
-            ReplaceString(filename, ".bsp", "", false);
+            ReplaceString(filename, 128, ".bsp", "", false);
 
             char m_szMap[128], m_szQuery[256];
             SQL_EscapeString(g_hDatabase, filename, m_szMap, 128);
