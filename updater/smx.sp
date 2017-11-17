@@ -64,7 +64,9 @@ void SMX_OnDatabaseAvailable(bool command = false)
     {
         currentSmx++;
         FormatEx(url, 192, "https://plugins.csgogamers.com/get.php?plugin=%s&md5=%s", smxShort[plugin], md5);
+        LogMessage("Update -> %s", url);
         System2_DownloadFile(SMX_OnDownloadSmxCompleted, url, smxDLPath[plugin], plugin);
+        CreateTimer(30.0, Timer_CheckSmxCompleted);
     }
     
     //check amp
@@ -73,10 +75,10 @@ void SMX_OnDatabaseAvailable(bool command = false)
     {
         currentSmx++;
         FormatEx(url, 192, "https://plugins.csgogamers.com/get.php?plugin=%s&md5=%s", smxShort[plugin], md5);
+        LogMessage("Update -> %s", url);
         System2_DownloadFile(SMX_OnDownloadSmxCompleted, url, smxDLPath[plugin], plugin);
+        CreateTimer(30.0, Timer_CheckSmxCompleted);
     }
-
-    CreateTimer(10.0, Timer_CheckSmxCompleted, _, TIMER_REPEAT);
 }
 
 public void SMX_OnDownloadSmxCompleted(bool finished, const char[] error, float dltotal, float dlnow, float ultotal, float ulnow, ePlugin plugin)
@@ -92,7 +94,7 @@ public void SMX_OnDownloadSmxCompleted(bool finished, const char[] error, float 
             // download return error
             if(FileSize(smxDLPath[plugin]) < 1024)
             {
-                LogMessage("%s is up to date", smxPath[plugin]);
+                LogMessage("%s is up to date -> %d", smxPath[plugin], FileSize(smxDLPath[plugin]);
             }
             else
             {
