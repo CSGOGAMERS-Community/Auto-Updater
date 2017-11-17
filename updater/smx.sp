@@ -38,7 +38,7 @@ static char smxShort[ePlugin][16] =
     "Unknown"
 };
 
-static char smxFile[ePlugin][16] =
+static char smxFile[ePlugin][32] =
 {
     "core.smx",
     "advmusicplayer.smx",

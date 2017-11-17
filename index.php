@@ -1,14 +1,24 @@
 <?php 
 
+if(!isset($_GET['plugin']){
+    echo 'Plugin ERROR';
+    die(404)
+}
+
 $path = __DIR__ . "/" . $_GET['plugin'] . "/Raw/" . $_GET['plugin'] . ".smx";
 
 if(!file_exists($path)){
-    echo 'Plugin ERROR!';
+    echo 'Plugin NOT exists!';
     die(404);
 }
 
 if(!isset($_GET['md5'])){
     echo 'MD5 ERROR!';
+    die(404);
+}
+
+if(!isset($_GET['file'])){
+    echo 'File ERROR!';
     die(404);
 }
 
