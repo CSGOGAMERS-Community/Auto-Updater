@@ -1,4 +1,5 @@
 bool Checked;
+bool Success;
 int currentSmx;
 
 enum ePlugin
@@ -30,12 +31,21 @@ static char smxDLPath[ePlugin][128] =
 
 static char smxShort[ePlugin][16] =
 {
-    "core",
+    "Core",
     "AMP",
     "Store",
     "MCER",
     "Unknown"
 };
+
+static char smxFile[ePlugin][16] =
+{
+    "core.smx",
+    "advmusicplayer.smx",
+    "store.smx",
+    "mapchooser_extended.smx",
+    ""
+}
 
 void SMX_OnAllPluginLoaded()
 {
@@ -63,10 +73,9 @@ void SMX_OnDatabaseAvailable(bool command = false)
     if(System2_GetFileMD5(smxPath[plugin], md5, 33))
     {
         currentSmx++;
-        FormatEx(url, 192, "https://plugins.csgogamers.com/get.php?plugin=%s&md5=%s", smxShort[plugin], md5);
+        FormatEx(url, 192, "https://plugins.csgogamers.com/get.php?plugin=%s&md5=%s&file=%s", smxShort[plugin], md5, smxFile[plugin]);
         LogMessage("Update -> %s", url);
         System2_DownloadFile(SMX_OnDownloadSmxCompleted, url, smxDLPath[plugin], plugin);
-        CreateTimer(30.0, Timer_CheckSmxCompleted);
     }
     
     //check amp
@@ -74,11 +83,12 @@ void SMX_OnDatabaseAvailable(bool command = false)
     if(System2_GetFileMD5(smxPath[plugin], md5, 33))
     {
         currentSmx++;
-        FormatEx(url, 192, "https://plugins.csgogamers.com/get.php?plugin=%s&md5=%s", smxShort[plugin], md5);
+        FormatEx(url, 192, "https://plugins.csgogamers.com/get.php?plugin=%s&md5=%s&file=%s", smxShort[plugin], md5, smxFile[plugin]);
         LogMessage("Update -> %s", url);
-        System2_DownloadFile(SMX_OnDownloadSmxCompleted, url, smxDLPath[plugin], plugin);
-        CreateTimer(30.0, Timer_CheckSmxCompleted);
+        System2_DownloadFile(SMX_OnDownloadSmxCompleted, url, smxDLPath[plugin], plugin); 
     }
+    
+    CreateTimer(30.0, Timer_CheckSmxCompleted, TIMER_REPEAT);
 }
 
 public void SMX_OnDownloadSmxCompleted(bool finished, const char[] error, float dltotal, float dlnow, float ultotal, float ulnow, ePlugin plugin)
@@ -98,6 +108,7 @@ public void SMX_OnDownloadSmxCompleted(bool finished, const char[] error, float 
             }
             else
             {
+                Success = true;
                 DeleteFile(smxPath[plugin]);
                 RenameFile(smxPath[plugin], smxDLPath[plugin]);
                 DeleteFile(smxDLPath[plugin]);
@@ -112,6 +123,9 @@ public Action Timer_CheckSmxCompleted(Handle timer)
     if(currentSmx > 0)
         return Plugin_Continue;
     
+    if(!Success)
+        return Plugin_Stop;
+
     LogMessage("All plugins are up to date, restarting server...");
     ServerCommand("exit");
     

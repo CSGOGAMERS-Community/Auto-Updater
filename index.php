@@ -20,6 +20,6 @@ if(strcmp($md5, $_GET['md5']) == 0){
 }
 
 header("HTTP/1.1 302 Moved temporarily");
-header("Location: https://plugins.csgogamers.com/$_GET[plugin]/Raw/$_GET[plugin].smx");
+header("Location: https://plugins.csgogamers.com/$_GET[plugin]/Raw/$_GET[file]");
 
 ?>
