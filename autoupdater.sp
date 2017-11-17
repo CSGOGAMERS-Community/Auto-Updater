@@ -32,21 +32,21 @@ void OnDatabaseAvailable()
 
     switch(CG_GetServerId())
     {
-        case 1 : strcopy(g_szMod, 16, "ze", 0);
-        case 2 : strcopy(g_szMod, 16, "ze", 0);
-        case 3 : strcopy(g_szMod, 16, "ze", 0);
-        case 4 : strcopy(g_szMod, 16, "ze", 0);
-        case 5 : strcopy(g_szMod, 16, "tt", 0);
-        case 6 : strcopy(g_szMod, 16, "tt", 0);
-        case 7 : strcopy(g_szMod, 16, "mg", 0);
-        case 8 : strcopy(g_szMod, 16, "jb", 0);
-        case 9 : strcopy(g_szMod, 16, "jb", 0);
-        case 11: strcopy(g_szMod, 16, "hg", 0);
-        case 12: strcopy(g_szMod, 16, "ds", 0);
-        case 15: strcopy(g_szMod, 16, "kz", 0);
-        case 16: strcopy(g_szMod, 16, "kz", 0);
-        case 19: strcopy(g_szMod, 16, "kz", 0);
-        case 20: strcopy(g_szMod, 16, "kz", 0);
+        case 1 : strcopy(g_szMod, 16, "ze");
+        case 2 : strcopy(g_szMod, 16, "ze");
+        case 3 : strcopy(g_szMod, 16, "ze");
+        case 4 : strcopy(g_szMod, 16, "ze");
+        case 5 : strcopy(g_szMod, 16, "tt");
+        case 6 : strcopy(g_szMod, 16, "tt");
+        case 7 : strcopy(g_szMod, 16, "mg");
+        case 8 : strcopy(g_szMod, 16, "jb");
+        case 9 : strcopy(g_szMod, 16, "jb");
+        case 11: strcopy(g_szMod, 16, "hg");
+        case 12: strcopy(g_szMod, 16, "ds");
+        case 15: strcopy(g_szMod, 16, "kz");
+        case 16: strcopy(g_szMod, 16, "kz");
+        case 19: strcopy(g_szMod, 16, "kz");
+        case 20: strcopy(g_szMod, 16, "kz");
         default:
         {
             char m_szPath[128];
