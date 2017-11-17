@@ -55,6 +55,8 @@ void OnDatabaseAvailable()
             ServerCommand("sm plugins unload autoupdater.smx");
         }
     }
+    
+    SMX_OnDatabaseAvailable();
 }
 
 public void OnAllPluginsLoaded()
