@@ -114,7 +114,8 @@ public void OnMapVoteEnd(const char[] map)
 
     strcopy(nextMap, 128, map);
     
-    NAV_GetFiles(map);
+    NAV_CheckMapNav(map);
+
     CFG_GetTrans();
     CFG_GetConfs();
     CFG_GetStrip();
