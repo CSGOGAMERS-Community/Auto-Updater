@@ -91,7 +91,11 @@ void CheckMapsOnStart(ArrayList array_mapmysql)
         
         if(strlen(map) < 3) continue;
         
-        if(FindStringInArray(array_mapmysql, map) != -1) continue;
+        if(FindStringInArray(array_mapmysql, map) != -1)
+        {
+            NAV_CheckMapNav(map);
+            continue;
+        }    
         
         Format(map, 128, "maps/%s.bsp", map);
         
