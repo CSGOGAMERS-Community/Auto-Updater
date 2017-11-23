@@ -100,6 +100,10 @@ void SMX_OnDatabaseAvailable(bool command = false)
             LogMessage("Update -> %s", url);
             System2_DownloadFile(SMX_OnDownloadSmxCompleted, url, smxDLPath[plugin], plugin);
         }
+        else if(FileExists(smxPath[plugin]))
+            LogError("Get %s MD5 failed!", smxPath[plugin]);
+        else
+            LogError("%s does not exists!", smxPath[plugin]);
     }
 
     if(plugin != pl_Unknown)
