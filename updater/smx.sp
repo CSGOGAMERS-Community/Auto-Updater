@@ -110,7 +110,7 @@ void SMX_OnDatabaseAvailable(bool command = false)
             LogError("%s does not exists!", smxPath[plugin]);
     }
 
-    if(plugin != pl_Unknown && currentSmx > 0)
+    if(currentSmx > 0)
         CreateTimer(60.0, Timer_CheckSmxCompleted, _, TIMER_REPEAT);
 }
 
