@@ -32,7 +32,7 @@ static char smxDLPath[ePlugin][128] =
 {
     "addons/sourcemod/data/download/core.smx",
     "addons/sourcemod/data/download/advmusicplayer.smx",
-    "addons/sourcemod/data/download/store.smx",
+    "addons/sourcemod/data/download/store_{mod}.smx",
     "addons/sourcemod/data/download/autoupdater.smx",
     "addons/sourcemod/data/download/mapchooser_redux.smx",
     "addons/sourcemod/data/download/rockthevote_redux.smx",
@@ -96,6 +96,7 @@ void SMX_OnDatabaseAvailable(bool command = false)
         {
             currentSmx++;
             FormatEx(url, 192, "https://plugins.csgogamers.com/get.php?plugin=%s&md5=%s&file=%s", smxShort[plugin], md5, smxFile[plugin]);
+            ReplaceString(url, 192, "{mod}", g_szMod, false);
             LogMessage("Update -> %s", url);
             System2_DownloadFile(SMX_OnDownloadSmxCompleted, url, smxDLPath[plugin], plugin);
         }
