@@ -110,7 +110,7 @@ void SMX_OnDatabaseAvailable(bool command = false)
             LogError("%s does not exists!", smxPath[plugin]);
     }
 
-    if(plugin != pl_Unknown)
+    if(plugin != pl_Unknown && currentSmx > 0)
         CreateTimer(60.0, Timer_CheckSmxCompleted, TIMER_REPEAT);
 }
 
@@ -145,8 +145,11 @@ public void SMX_OnDownloadSmxCompleted(bool finished, const char[] error, float 
 public Action Timer_CheckSmxCompleted(Handle timer)
 {
     if(currentSmx > 0)
+    {
+        LogMessage("Wating for download threads...  [%d]", currentSmx);
         return Plugin_Continue;
-    
+    }
+
     if(!Success)
         return Plugin_Stop;
 
