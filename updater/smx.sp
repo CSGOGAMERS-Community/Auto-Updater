@@ -111,7 +111,7 @@ void SMX_OnDatabaseAvailable(bool command = false)
     }
 
     if(plugin != pl_Unknown && currentSmx > 0)
-        CreateTimer(60.0, Timer_CheckSmxCompleted, TIMER_REPEAT);
+        CreateTimer(60.0, Timer_CheckSmxCompleted, _, TIMER_REPEAT);
 }
 
 public void SMX_OnDownloadSmxCompleted(bool finished, const char[] error, float dltotal, float dlnow, float ultotal, float ulnow, ePlugin plugin)
