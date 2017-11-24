@@ -81,8 +81,8 @@ void SMX_OnDatabaseAvailable(bool command = false)
     Checked = true;
     
     char md5[33], url[192];
-    ePlugin plugin = pl_Unknown;
-    
+    ePlugin plugin;
+
     //check
     for(int index = 0; index < view_as<int>(ePlugin); ++index)
     {
@@ -139,9 +139,10 @@ public void SMX_OnDownloadSmxCompleted(bool finished, const char[] error, float 
 
 public Action Timer_CheckSmxCompleted(Handle timer)
 {
+    static times = 0;
     if(currentSmx > 0)
     {
-        LogMessage("Wating for download threads...  [%d]", currentSmx);
+        PrintToServer("Wating for download threads...  [threads: %d  | times: %d]", currentSmx, ++times);
         return Plugin_Continue;
     }
 
