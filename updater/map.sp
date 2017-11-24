@@ -101,7 +101,7 @@ void CheckMapsOnStart(ArrayList array_mapmysql)
         FormatEx(bsp, 128, "maps/%s.bsp", map);
         LogMessage("Delete %s %s!", bsp, DeleteFile(bsp) ? "successful" : "failed");
         
-        char nav[128]
+        char nav[128];
         FormatEx(nav, 128, "maps/%s.nav", map);
         LogMessage("Delete %s %s!", nav, DeleteFile(nav) ? "successful" : "failed");
 
