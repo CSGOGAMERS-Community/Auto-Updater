@@ -12,7 +12,6 @@ enum ePlugin
     pl_MCR_rtv,
     pl_MCR_nmt,
     pl_MCR_ext,
-    pl_Unknown
 }
 
 static char smxPath[ePlugin][128] =
@@ -25,7 +24,6 @@ static char smxPath[ePlugin][128] =
     "addons/sourcemod/plugins/rockthevote_redux.smx",
     "addons/sourcemod/plugins/nominations_redux.smx",
     "addons/sourcemod/plugins/maptimelimit_redux.smx",
-    "addons/sourcemod/plugins/"
 };
 
 static char smxDLPath[ePlugin][128] =
@@ -38,7 +36,6 @@ static char smxDLPath[ePlugin][128] =
     "addons/sourcemod/data/download/rockthevote_redux.smx",
     "addons/sourcemod/data/download/nominations_redux.smx",
     "addons/sourcemod/data/download/maptimelimit_redux.smx",
-    "addons/sourcemod/data/download/"
 };
 
 static char smxShort[ePlugin][16] =
@@ -51,7 +48,6 @@ static char smxShort[ePlugin][16] =
     "MCR",
     "MCR",
     "MCR",
-    "Unknown"
 };
 
 static char smxFile[ePlugin][32] =
@@ -64,7 +60,6 @@ static char smxFile[ePlugin][32] =
     "rockthevote_redux.smx",
     "nominations_redux.smx",
     "maptimelimit_redux.smx",
-    ""
 };
 
 void SMX_OnAllPluginLoaded()
@@ -101,7 +96,7 @@ void SMX_OnDatabaseAvailable(bool command = false)
             else
                 FormatEx(url, 192, "https://plugins.csgogamers.com/get.php?plugin=%s&md5=%s&file=%s", smxShort[plugin], md5, smxFile[plugin]);
             
-            LogMessage("Update -> %s", url);
+            PrintToServer("Update -> %s", url);
             System2_DownloadFile(SMX_OnDownloadSmxCompleted, url, smxDLPath[plugin], plugin);
         }
         else if(FileExists(smxPath[plugin]))
@@ -127,7 +122,7 @@ public void SMX_OnDownloadSmxCompleted(bool finished, const char[] error, float 
             // download return error
             if(FileSize(smxDLPath[plugin]) < 1024)
             {
-                LogMessage("%s is up to date -> %d", smxPath[plugin], FileSize(smxDLPath[plugin]));
+                PrintToServer("%s is up to date -> %d", smxPath[plugin], FileSize(smxDLPath[plugin]));
             }
             else
             {
@@ -155,6 +150,6 @@ public Action Timer_CheckSmxCompleted(Handle timer)
 
     LogMessage("All plugins are up to date, restarting server...");
     ServerCommand("exit");
-    
+
     return Plugin_Stop;
 }
