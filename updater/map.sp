@@ -60,12 +60,20 @@ void InsertMapsToDatabase()
                 continue;
             
             ReplaceString(filename, 128, ".bsp", "", false);
-
-            char m_szMap[128], m_szQuery[256];
-            SQL_EscapeString(g_hDatabase, filename, m_szMap, 128);
-            FormatEx(m_szQuery, 256, "INSERT INTO map_database VALUES ('%s', '%s');", g_szMod, m_szMap);
-            CG_DatabaseSaveGames(m_szQuery);
-            LogMessage("Insert %s to database.", filename);
+            
+            char path[128], md5[33];
+            FormatEx(path, 128, "maps/%s.bsp", filename);
+            
+            if(System2_GetFileMD5(path, md5, 33))
+            {
+                char m_szMap[128], m_szQuery[256];
+                SQL_EscapeString(g_hDatabase, filename, m_szMap, 128);
+                FormatEx(m_szQuery, 256, "INSERT INTO map_database VALUES ('%s', '%s', '%s');", g_szMod, m_szMap, md5);
+                CG_DatabaseSaveGames(m_szQuery);
+                LogMessage("Insert %s to database.", filename);
+            }
+            else
+                LogError("Get %s MD5 failed!", path);
         }
         CloseHandle(hDirectory);
     }
