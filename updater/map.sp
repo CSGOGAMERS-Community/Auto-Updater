@@ -77,6 +77,9 @@ void InsertMapsToDatabase()
         }
         CloseHandle(hDirectory);
     }
+    
+    CreateTimer(1.0, Timer_ChangeMap);
+    CreateTimer(9.9, Timer_RestartSV);
 }
 
 void CheckMapsOnStart(ArrayList array_mapmysql)
