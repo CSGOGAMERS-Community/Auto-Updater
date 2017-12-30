@@ -122,7 +122,11 @@ public void SMX_OnDownloadSmxCompleted(bool finished, const char[] error, float 
             // download return error
             if(FileSize(smxDLPath[plugin]) < 1024)
             {
-                PrintToServer("%s is up to date -> %d", smxPath[plugin], FileSize(smxDLPath[plugin]));
+                char content[128];
+                Handle file = OpenFile(smxDLPath[plugin], "r");
+                ReadFileString(file, content, 128, -1)
+                CloseHandle(file);
+                PrintToServer("%s is checked -> %s", smxPath[plugin], content);
             }
             else
             {
