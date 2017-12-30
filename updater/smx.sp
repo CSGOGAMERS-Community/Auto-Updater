@@ -124,7 +124,7 @@ public void SMX_OnDownloadSmxCompleted(bool finished, const char[] error, float 
             {
                 char content[128];
                 Handle file = OpenFile(smxDLPath[plugin], "r");
-                ReadFileString(file, content, 128, -1)
+                ReadFileString(file, content, 128, -1);
                 CloseHandle(file);
                 PrintToServer("%s is checked -> %s", smxPath[plugin], content);
             }
