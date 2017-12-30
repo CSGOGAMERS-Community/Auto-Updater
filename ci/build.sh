@@ -32,7 +32,7 @@ wget "https://github.com/Kxnrl/Core/raw/master/include/cg_core.inc" -q -O includ
 
 #下载System2头文件
 echo -e "Download system2.inc ..."
-wget "https://github.com/dordnung/System2/raw/master/system2.inc" -q -O include/system2.inc
+wget "https://github.com/dordnung/System2/raw/v2.6/system2.inc" -q -O include/system2.inc
 
 
 #设置文件为可执行
