@@ -61,19 +61,19 @@ void InsertMapsToDatabase()
             
             ReplaceString(filename, 128, ".bsp", "", false);
             
-            char path[128], md5[33];
+            char path[128], crc32[33];
             FormatEx(path, 128, "maps/%s.bsp", filename);
             
-            if(System2_GetFileMD5(path, md5, 33))
+            if(System2_GetFileCRC32(path, crc32, 33))
             {
                 char m_szMap[128], m_szQuery[256];
                 SQL_EscapeString(g_hDatabase, filename, m_szMap, 128);
-                FormatEx(m_szQuery, 256, "INSERT INTO dxg_mapdb VALUES ('%d', '%s', '%s');", MG_Core_GetServerModId(), m_szMap, md5);
+                FormatEx(m_szQuery, 256, "INSERT INTO dxg_mapdb VALUES ('%d', '%s', '%s');", MG_Core_GetServerModId(), m_szMap, crc32);
                 MG_MySQL_SaveDatabase(m_szQuery);
                 LogMessage("Insert %s to database.", filename);
             }
             else
-                LogError("Get %s MD5 failed!", path);
+                LogError("Get %s CRC32 failed!", path);
         }
         CloseHandle(hDirectory);
     }
