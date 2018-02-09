@@ -15,13 +15,23 @@ if(!isset($_GET['md5'])){
     die(404);
 }
 
-switch(intval($_GET['plugin']))
+switch($_GET['plugin'])
 {
-    case 101, 102, 103, 104, 105, 201, 202, 203:
+    case 101:
+	case 102:
+	case 103:
+	case 104:
+	case 105:
+	case 201:
+	case 202:
+	case 203:
         $path = "/PuellaMagi/Raw";
         break;
-    case 301, 302, 303, 304
-        $path = "/MCR/Raw";
+    case 301:
+	case 302:
+	case 303:
+	case 304:
+       $path = "/MCR/Raw";
         break;
     case 401:
         $path = "/AMP/Raw";
@@ -31,7 +41,6 @@ switch(intval($_GET['plugin']))
         break;
     default:
         echo 'Plugin ERROR!';
-        die(404);
         break;
 }
 
@@ -45,11 +54,12 @@ if(!file_exists($file)){
 $md5 = md5_file($file);
 
 if(strcmp($md5, $_GET['md5']) == 0){
-    echo 'Plugin ' . $_GET['plugin'] . ' is up to date';
+    echo 'Plugin ' . $_GET['file'] . ' is up to date';
     die(200);
 }
 
+$loc = $path . "/" . $_GET['file'];
 header("HTTP/1.1 302 Moved temporarily");
-header("Location: https://plugins.csgogamers.com$path/$_GET[file]");
+header("Location: https://plugins.csgogamers.com/$loc");
 
 ?>
