@@ -4,62 +4,110 @@ int currentSmx;
 
 enum ePlugin
 {
-    pl_core,
+    pl_Core_main,
+    pl_Core_users,
+    pl_Core_stats,
+    pl_Core_motd,
+    pl_Core_vars,
+    pl_Shop_core,
+    pl_Shop_skin,
+    pl_Shop_chat,
     pl_AMP,
-    pl_Store,
     pl_Updater,
     pl_MCR_mcr,
     pl_MCR_rtv,
     pl_MCR_nmt,
-    pl_MCR_ext,
+    pl_MCR_ext
 }
 
 static char smxPath[ePlugin][128] =
 {
-    "addons/sourcemod/plugins/core.smx",
+    "addons/sourcemod/plugins/MagicGirl.smx",
+    "addons/sourcemod/plugins/mg-user.smx",
+    "addons/sourcemod/plugins/mg-stats.smx",
+    "addons/sourcemod/plugins/mg-motd.smx",
+    "addons/sourcemod/plugins/mg-vars.smx",
+    "addons/sourcemod/plugins/shop-core.smx",
+    "addons/sourcemod/plugins/shop-skin.smx",
+    "addons/sourcemod/plugins/shop-chat.smx",
     "addons/sourcemod/plugins/advmusicplayer.smx",
-    "addons/sourcemod/plugins/store.smx",
     "addons/sourcemod/plugins/autoupdater.smx",
     "addons/sourcemod/plugins/mapchooser_redux.smx",
     "addons/sourcemod/plugins/rockthevote_redux.smx",
     "addons/sourcemod/plugins/nominations_redux.smx",
-    "addons/sourcemod/plugins/maptimelimit_redux.smx",
+    "addons/sourcemod/plugins/maptimelimit_redux.smx"
 };
 
 static char smxDLPath[ePlugin][128] =
 {
-    "addons/sourcemod/data/download/core.smx",
+    "addons/sourcemod/data/download/MagicGirl.smx",
+    "addons/sourcemod/data/download/mg-user.smx",
+    "addons/sourcemod/data/download/mg-stats.smx",
+    "addons/sourcemod/data/download/mg-motd.smx",
+    "addons/sourcemod/data/download/mg-vars.smx",
+    "addons/sourcemod/data/download/shop-core.smx",
+    "addons/sourcemod/data/download/shop-skin.smx",
+    "addons/sourcemod/data/download/shop-chat.smx",
     "addons/sourcemod/data/download/advmusicplayer.smx",
-    "addons/sourcemod/data/download/store.smx",
     "addons/sourcemod/data/download/autoupdater.smx",
     "addons/sourcemod/data/download/mapchooser_redux.smx",
     "addons/sourcemod/data/download/rockthevote_redux.smx",
     "addons/sourcemod/data/download/nominations_redux.smx",
-    "addons/sourcemod/data/download/maptimelimit_redux.smx",
+    "addons/sourcemod/data/download/maptimelimit_redux.smx"
 };
 
-static char smxShort[ePlugin][16] =
+static char smxShort[ePlugin][32] =
 {
-    "Core",
-    "AMP",
-    "Store",
-    "Updater",
-    "MCR",
-    "MCR",
-    "MCR",
-    "MCR",
+    "MagicGirl - Core",
+    "MagicGirl - User Manager",
+    "MagicGirl - Stats",
+    "MagicGirl - Motd",
+    "MagicGirl - Vars Library",
+    "Shop - Core",
+    "Shop - Player Skin",
+    "Shop - Chat Processor",
+    "Advanced Music Player",
+    "Auto Updater",
+    "Mapchooser Redux",
+    "Rock the Vote Redux",
+    "Nominations Redux",
+    "Maptime Extend Redux"
 };
 
 static char smxFile[ePlugin][32] =
 {
-    "core.smx",
+    "MagicGirl.smx",
+    "mg-user.smx",
+    "mg-stats.smx",
+    "mg-motd.smx",
+    "mg-vars.smx",
+    "shop-core.smx",
+    "shop-skin.smx",
+    "shop-chat.smx",
     "advmusicplayer.smx",
-    "store.smx",
     "autoupdater.smx",
     "mapchooser_redux.smx",
     "rockthevote_redux.smx",
     "nominations_redux.smx",
-    "maptimelimit_redux.smx",
+    "maptimelimit_redux.smx"
+};
+
+static int smxId[ePlugin] = 
+{
+    101,
+    102,
+    103,
+    104,
+    105,
+    201,
+    202,
+    203,
+    401,
+    402,
+    301,
+    302,
+    303,
+    304
 };
 
 void SMX_OnAllPluginLoaded()
@@ -91,11 +139,7 @@ void SMX_OnDatabaseAvailable(bool command = false)
         {
             currentSmx++;
 
-            if(plugin == pl_Store)
-                FormatEx(url, 192, "https://plugins.csgogamers.com/get.php?plugin=%s&md5=%s&file=store_%s.smx", smxShort[plugin], md5, g_szMod);
-            else
-                FormatEx(url, 192, "https://plugins.csgogamers.com/get.php?plugin=%s&md5=%s&file=%s", smxShort[plugin], md5, smxFile[plugin]);
-            
+            FormatEx(url, 192, "https://plugins.csgogamers.com/get.php?plugin=%d&md5=%s&file=%s", smxId[plugin], md5, smxFile[plugin]);
             PrintToServer("Update -> %s", url);
             System2_DownloadFile(SMX_OnDownloadSmxCompleted, url, smxDLPath[plugin], plugin);
         }
@@ -126,14 +170,14 @@ public void SMX_OnDownloadSmxCompleted(bool finished, const char[] error, float 
                 Handle file = OpenFile(smxDLPath[plugin], "r");
                 ReadFileString(file, content, 128, -1);
                 CloseHandle(file);
-                PrintToServer("%s is checked -> %s", smxPath[plugin], content);
+                PrintToServer("%s is checked -> %s", smxShort[plugin], content);
             }
             else
             {
                 Success = true;
                 DeleteFile(smxPath[plugin]);
                 RenameFile(smxPath[plugin], smxDLPath[plugin]);
-                LogMessage("%s update successful -> size: %d", smxPath[plugin], FileSize(smxPath[plugin]));
+                LogMessage("%s update successful -> size: %d", smxShort[plugin], FileSize(smxPath[plugin]));
             }
             DeleteFile(smxDLPath[plugin]);
         }

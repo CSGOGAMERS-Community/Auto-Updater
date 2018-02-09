@@ -23,11 +23,14 @@ tar -xzf sourcemod.tar.gz
 
 #建立include文件夹
 mkdir include
+mkdir include/MagicGirl
 
 
-#下载CG头文件
-echo -e "Download cg_core.inc ..."
-wget "https://github.com/Kxnrl/Core/raw/master/include/cg_core.inc" -q -O include/cg_core.inc
+#下载MG头文件
+echo -e "Download MagicGirl.NET.inc ..."
+wget "https://github.com/PuellaMagi/Core/raw/master/Game/include/MagicGirl.NET.inc" -q -O include/MagicGirl.NET.inc
+echo -e "Download vars.inc ..."
+wget "https://github.com/PuellaMagi/Core/raw/master/Game/include/MagicGirl/vars.inc" -q -O include/MagicGirl/vars.inc
 
 
 #下载System2头文件

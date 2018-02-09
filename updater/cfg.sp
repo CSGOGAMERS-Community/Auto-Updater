@@ -6,10 +6,10 @@ void CFG_OnAllPluginLoaded()
     RegAdminCmd("sm_updatecfg", Command_UpdaterCFG, ADMFLAG_BAN);
     
     if(FindPluginByFile("zombiereloaded.smx"))
-        strcopy(baseURL, 192, "https://raw.githubusercontent.com/CSGOGAMERS-Community/CG-Server/master/ZombieEscape");
+        strcopy(baseURL, 192, "https://raw.githubusercontent.com/PuellaMagi/Server-Data/master/ZombieEscape");
     
     if(FindPluginByFile("mg_stats.smx"))
-        strcopy(baseURL, 192, "https://raw.githubusercontent.com/CSGOGAMERS-Community/CG-Server/master/MiniGames");
+        strcopy(baseURL, 192, "https://raw.githubusercontent.com/PuellaMagi/Server-Data/master/MiniGames");
 }
 
 void CFG_OnMapStart(const char[] map)
@@ -103,9 +103,6 @@ public void CFG_OnConfsCompleted(bool finished, const char[] error, float dltota
         {
             DeleteFile(newFile);
             LogError("Download Config[%s] Return: 404 -> need update config on GitHub", nextMap);
-            char m_szQuery[256];
-            Format(m_szQuery, 256, "REPLACE INTO map_configs (`map`) VALUES ('%s')", nextMap);
-            CG_DatabaseSaveGames(m_szQuery);
             return;
         }
 

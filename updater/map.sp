@@ -8,15 +8,15 @@ void MAP_OnAllPluginLoaded()
     CreateTimer(1800.0, Timer_CheckUpdateMap, _, TIMER_REPEAT);
 }
 
-public void SQLCallback_CheckMap(Handle owner, Handle hndl, const char[] error, int startCheck)
+public void SQLCallback_CheckMap(Database db, DBResultSet results, const char[] error, int startCheck)
 {
-    if(hndl == INVALID_HANDLE)
+    if(results == null || error[0])
     {
         LogError("Can not get map list from database :  %s", error);
         return;
     }
     
-    if(SQL_GetRowCount(hndl) < 1)
+    if(results.RowCount < 1)
     {
         LogMessage("Can not get map list from database! Now inserting!");
         InsertMapsToDatabase();
@@ -28,9 +28,9 @@ public void SQLCallback_CheckMap(Handle owner, Handle hndl, const char[] error, 
     char map[128];
 
     ArrayList array_mapmysql = CreateArray(ByteCountToCells(128));
-    while(SQL_FetchRow(hndl))
+    while(results.FetchRow())
     {
-        SQL_FetchString(hndl, 0,  map, 128);
+        results.FetchString(0,  map, 128);
         PushArrayString(array_mapmysql, map);
     }
     
@@ -68,8 +68,8 @@ void InsertMapsToDatabase()
             {
                 char m_szMap[128], m_szQuery[256];
                 SQL_EscapeString(g_hDatabase, filename, m_szMap, 128);
-                FormatEx(m_szQuery, 256, "INSERT INTO map_database VALUES ('%s', '%s', '%s');", g_szMod, m_szMap, md5);
-                CG_DatabaseSaveGames(m_szQuery);
+                FormatEx(m_szQuery, 256, "INSERT INTO dxg_mapdb VALUES ('%d', '%s', '%s');", MG_Core_GetServerModId(), m_szMap, md5);
+                MG_MySQL_SaveDatabase(m_szQuery);
                 LogMessage("Insert %s to database.", filename);
             }
             else
@@ -98,7 +98,7 @@ void CheckMapsOnStart(ArrayList array_mapmysql)
     
     for(int index = 0; index < arraysize_maplocal; ++index)
     {
-        GetArrayString(array_maplocal, index, map, 128);
+        array_maplocal.GetString(index, map, 128);
         
         if(strlen(map) < 3) continue;
         
@@ -111,14 +111,14 @@ void CheckMapsOnStart(ArrayList array_mapmysql)
         char bsp[128];
         FormatEx(bsp, 128, "maps/%s.bsp", map);
         LogMessage("Delete %s %s!", bsp, DeleteFile(bsp) ? "successful" : "failed");
-        
+
         char nav[128];
         FormatEx(nav, 128, "maps/%s.nav", map);
         LogMessage("Delete %s %s!", nav, DeleteFile(nav) ? "successful" : "failed");
 
         deleted = true;
     }
-    
+
     delete array_maplocal; 
 
     if(deleted)
@@ -130,7 +130,10 @@ void CheckMapsOnStart(ArrayList array_mapmysql)
 
 public Action Timer_ChangeMap(Handle timer)
 {
-    ForceChangeLevel(g_szMod, "restart map");
+    char map[128];
+    GetCurrentMap(map, 128);
+    map[2] = '\0';
+    ForceChangeLevel(map, "restart map");
     return Plugin_Stop;
 }
 
@@ -149,29 +152,24 @@ public Action Timer_CheckUpdateMap(Handle timer)
 void CheckingNewMap()
 {
     char m_szQuery[128];
-    Format(m_szQuery, 128, "SELECT `id`, `map` FROM `map_update` WHERE `sid` = '%d' AND `done` = '0' AND `try` < '3' ORDER BY id ASC LIMIT 1", CG_GetServerId());
-    SQL_TQuery(g_hDatabase, SQLCallback_GetNewMap, m_szQuery);
-
-    PrintToServer("Checking new map from databases");
+    FormatEx(m_szQuery, 128, "SELECT `id`, `map` FROM `dxg_mapupdate` WHERE `sid` = '%d' AND `done` = '0' AND `try` < '3' ORDER BY id ASC LIMIT 1", MG_Core_GetServerId());
+    g_hDatabase.Query(SQLCallback_GetNewMap, m_szQuery);
 }
 
-public void SQLCallback_GetNewMap(Handle owner, Handle hndl, const char[] error, any unuse)
+public void SQLCallback_GetNewMap(Database db, DBResultSet results, const char[] error, any unuse)
 {
-    if(owner == INVALID_HANDLE || hndl == INVALID_HANDLE)
+    if(results == null || error[0])
     {
         LogError("Checking new map list failed: %s", error);
         return;
     }
     
-    if(!SQL_FetchRow(hndl))
-    {
-        PrintToServer("no new map from database");
+    if(!results.FetchRow())
         return;
-    }
 
-    SQL_FetchString(hndl, 1, currentMap, 128);
+    results.FetchString(1, currentMap, 128);
     
-    Format(currentUrl, 256, "https://maps.csgogamers.com/%s.bsp.bz2", currentMap);
+    FormatEx(currentUrl, 256, "https://maps.csgogamers.com/%s.bsp.bz2", currentMap);
 
     if(currentMap[0] == '\0' || strlen(currentUrl) <= 35)
     {
@@ -180,13 +178,13 @@ public void SQLCallback_GetNewMap(Handle owner, Handle hndl, const char[] error,
     }
 
     char path[256];
-    Format(path, 256, "addons/sourcemod/data/download/%s.bsp.bz2", currentMap);
+    FormatEx(path, 256, "addons/sourcemod/data/download/%s.bsp.bz2", currentMap);
     System2_DownloadFile(MAP_OnDownloadMapCompleted, currentUrl, path);
 
     char m_szQuery[128];
-    Format(m_szQuery, 128, "UPDATE map_update SET try=try+1 WHERE id=%d", SQL_FetchInt(hndl, 0));
-    CG_DatabaseSaveGames(m_szQuery);
-    
+    FormatEx(m_szQuery, 128, "UPDATE dxg_mapupdate SET try=try+1 WHERE id=%d", results.FetchInt(0));
+    MG_MySQL_SaveDatabase(m_szQuery);
+
     PrintToServer("Download %s from %s", currentMap, currentUrl);
 }
 
@@ -200,7 +198,7 @@ public void MAP_OnDownloadMapCompleted(bool finished, const char[] error, float 
         {
             LogError("Download %s.bsp.bz2 form %s failed: %s", currentMap, currentUrl, error);
             char path[256];
-            Format(path, 256, "addons/sourcemod/data/download/%s.bsp.bz2", currentMap);
+            FormatEx(path, 256, "addons/sourcemod/data/download/%s.bsp.bz2", currentMap);
             DeleteFile(path);
             
             currentMap[0] = '\0';
@@ -212,9 +210,9 @@ public void MAP_OnDownloadMapCompleted(bool finished, const char[] error, float 
         }
 
         char path[256];
-        Format(path, 256, "addons/sourcemod/data/download/%s.bsp.bz2", currentMap);
+        FormatEx(path, 256, "addons/sourcemod/data/download/%s.bsp.bz2", currentMap);
         System2_ExtractArchive(MAP_OnBz2ExtractCompleted, path, "addons/sourcemod/data/download/");
-        
+
         PrintToServer("ExtractArchive %s to addons/sourcemod/data/download/%s.bsp", path, currentMap);
     }
 }
@@ -224,8 +222,8 @@ public void MAP_OnBz2ExtractCompleted(const char[] output, const int size, CMDRe
     if(status == CMD_SUCCESS)
     {
         char path[256], maps[256];
-        Format(path, 256, "addons/sourcemod/data/download/%s.bsp", currentMap);
-        Format(maps, 256, "maps/%s.bsp", currentMap);
+        FormatEx(path, 256, "addons/sourcemod/data/download/%s.bsp", currentMap);
+        FormatEx(maps, 256, "maps/%s.bsp", currentMap);
 
         System2_CopyFile(MAP_OnMapCopyCompleted, path, maps);
         
@@ -236,9 +234,9 @@ public void MAP_OnBz2ExtractCompleted(const char[] output, const int size, CMDRe
         LogError("Bz2 Extract addons/sourcemod/data/download/%s.bsp.bz2 failed: \n%s", currentMap, output);
 
         char path[256];
-        Format(path, 256, "addons/sourcemod/data/download/%s.bsp.bz2", currentMap);
+        FormatEx(path, 256, "addons/sourcemod/data/download/%s.bsp.bz2", currentMap);
         DeleteFile(path);
-        
+
         currentMap[0] = '\0';
         currentUrl[0] = '\0';
         
@@ -258,11 +256,11 @@ public void MAP_OnMapCopyCompleted(bool success, const char[] from, const char[]
 
         char del[256];
 
-        Format(del, 256, "addons/sourcemod/data/download/%s.bsp.bz2", currentMap);
+        FormatEx(del, 256, "addons/sourcemod/data/download/%s.bsp.bz2", currentMap);
         if(!DeleteFile(del))
             LogError("Delete %s failed.",  del);
 
-        Format(del, 256, "addons/sourcemod/data/download/%s.bsp", currentMap);
+        FormatEx(del, 256, "addons/sourcemod/data/download/%s.bsp", currentMap);
         if(!DeleteFile(del))
             LogError("Delete %s failed.",  del);
         
@@ -276,10 +274,10 @@ public void MAP_OnMapCopyCompleted(bool success, const char[] from, const char[]
 void UpdateMapStatus()
 {
     char m_szQuery[256], emap[128];
-    SQL_EscapeString(g_hDatabase, currentMap, emap, 128);
-    Format(m_szQuery, 512, "UPDATE map_update SET done = 1 WHERE sid = %d AND map = '%s'", CG_GetServerId(), emap);
-    CG_DatabaseSaveGames(m_szQuery);
-    
+    g_hDatabase.Escape(currentMap, emap, 128);
+    FormatEx(m_szQuery, 512, "UPDATE dxg_mapupdate SET done = 1 WHERE sid = %d AND map = '%s'", MG_Core_GetServerId(), emap);
+    MG_MySQL_SaveDatabase(m_szQuery);
+
     currentMap[0] = '\0';
     currentUrl[0] = '\0';
 }
@@ -295,12 +293,12 @@ public Action Command_DeleteMap(int client, int args)
 {
     if(!client)
         return Plugin_Handled;
-    
+
     char auth[32];
     GetClientAuthId(client, AuthId_Steam2, auth, 32, true);
     
     AdminId admin = FindAdminByIdentity(AUTHMETHOD_STEAM, auth);
-    
+
     if(admin == INVALID_ADMIN_ID)
         return Plugin_Handled;
     
@@ -308,8 +306,8 @@ public Action Command_DeleteMap(int client, int args)
         return Plugin_Handled;
 
     char m_szQuery[128];
-    FormatEx(m_szQuery, 128, "SELECT `map` FROM map_database WHERE `mod` = '%s'", g_szMod);
-    SQL_TQuery(g_hDatabase, SQLCallback_CheckMap, m_szQuery, client);
+    FormatEx(m_szQuery, 128, "SELECT `map` FROM dxg_mapdb WHERE `mod` = '%d'", MG_Core_GetServerModId());
+    g_hDatabase.Query(SQLCallback_CheckMap, m_szQuery, client);
 
     return Plugin_Handled;
 }
@@ -337,7 +335,7 @@ void CheckMapsOnDelete(ArrayList array_mapmysql, int client)
     int array_size = GetArraySize(array_mapmysql);
     for(int index = 0; index < array_size; ++index)
     {
-        GetArrayString(array_mapmysql, index, map, 128);
+        array_mapmysql.GetString(index, map, 128);
         AddMenuItem(menu, map, map);
     }
 
@@ -395,8 +393,8 @@ public int MenuHandler_Confirm(Handle menu, MenuAction action, int client, int p
 void UTIL_DeleteMap(int client, const char[] map)
 {
     char m_szQuery[256];
-    Format(m_szQuery, 256, "DELETE FROM map_database WHERE map = '%s'", map);
-    CG_DatabaseSaveGames(m_szQuery);
+    Format(m_szQuery, 256, "DELETE FROM dxg_mapdb WHERE map = '%s'", map);
+    MG_MySQL_SaveDatabase(m_szQuery);
     
     PrintToChat(client, "[\x07MAP\x01]  已从数据库中删除该地图.");
     PrintToChat(client, "[\x07MAP\x01]  当前服务器将在下次启动时,从本地删除地图.");

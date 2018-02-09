@@ -7,7 +7,8 @@ bool isBigMap;
 void ADD_OnAllPluginLoaded()
 {
     RegAdminCmd("sm_updateadd", Command_UpdaterADD, ADMFLAG_BAN);
-    if(FindPluginByFile("store.smx"))
+
+    if(FindPluginByFile("shop-core.smx"))
         return;
 
     char szPath[128];
@@ -43,7 +44,7 @@ void CheckAddMap()
         return;
     }
 
-    SQL_TQuery(g_hDatabase, SQLCallback_GetAddMap, "SELECT `id`,`type`,`map`,`url` FROM `map_request` WHERE `done` = '%d' AND `try` < '3' ORDER BY id ASC LIMIT 1");
+    g_hDatabase.Query(SQLCallback_GetAddMap, "SELECT `id`,`type`,`map`,`url` FROM `dxg_maprequest` WHERE `done` = '%d' AND `try` < '3' ORDER BY id ASC LIMIT 1");
     LogMessage("Checking add map from databases");
 }
 
@@ -63,21 +64,21 @@ void Recheck()
 }
 
 // SQL callback
-public void SQLCallback_GetAddMap(Handle owner, Handle hndl, const char[] error, any unuse)
+public void SQLCallback_GetAddMap(Database db, DBResultSet results, const char[] error, any unuse)
 {
     // If is not test server, then stop.
     if(!testServer)
         return;
 
     // SQL handle is not valid.
-    if(owner == INVALID_HANDLE || hndl == INVALID_HANDLE)
+    if(results == null)
     {
         LogError("Checking add map list failed: %s", error);
         return;
     }
 
     // Has no map in database.
-    if(!SQL_FetchRow(hndl))
+    if(!results.FetchRow())
     {
         LogMessage("no add map from database");
         return;
@@ -85,23 +86,23 @@ public void SQLCallback_GetAddMap(Handle owner, Handle hndl, const char[] error,
 
     // SQL fetch row
     char map[128];
-    SQL_FetchString(hndl, 1, serverType, 4);
-    SQL_FetchString(hndl, 2, map, 128);
-    SQL_FetchString(hndl, 3, downloadUrl, 256);
-    
+    results.FetchString(1, serverType, 4);
+    results.FetchString(2, map, 128);
+    results.FetchString(3, downloadUrl, 256);
+
     // Remove ext from map name.
     ReplaceString(map, 128, ".bsp", "", false);
     ReplaceString(map, 128, "bsp", "", false);
     ReplaceString(map, 128, ".bz2", "", false);
     ReplaceString(map, 128, "bz2", "", false);
-    
-    // Use lower string
-    String_ToLower(map, downloadMap, 128);
+
+    // copy to
+    strcopy(downloadMap, 128, map);
 
     // Tell database we have been checked.
     char m_szQuery[128];
-    Format(m_szQuery, 128, "UPDATE map_request SET try=try+1 WHERE id=%d", SQL_FetchInt(hndl, 0));
-    CG_DatabaseSaveGames(m_szQuery);
+    FormatEx(m_szQuery, 128, "UPDATE dxg_maprequest SET try=try+1 WHERE id=%d", results.FetchInt(0));
+    MG_MySQL_SaveDatabase(m_szQuery);
     
     if(!NotFollowGameMode(serverType, map))
     {
@@ -299,10 +300,10 @@ public void ADD_OnBz2Completed(const char[] output, const int size, CMDReturn st
         Format(remote, 256, "/%s.bsp.bz2", downloadMap);
         
         char host[32], port[32], user[32], pswd[32];
-        CG_GetVariable("ftp_maps_host", host, 32);
-        CG_GetVariable("ftp_maps_port", port, 32);
-        CG_GetVariable("ftp_maps_user", user, 32);
-        CG_GetVariable("ftp_maps_pswd", pswd, 32);
+        MG_Vars_GetVariable("ftp_maps_host", host, 32);
+        MG_Vars_GetVariable("ftp_maps_port", port, 32);
+        MG_Vars_GetVariable("ftp_maps_user", user, 32);
+        MG_Vars_GetVariable("ftp_maps_pswd", pswd, 32);
         System2_UploadFTPFile(ADD_OnFTPUploadCompleted_CG, path, remote, host, user, pswd, StringToInt(port));
     }
     else if(status == CMD_ERROR)
@@ -352,10 +353,10 @@ public void ADD_OnFTPUploadCompleted_CG(bool finished, const char[] error, float
         }
 
         char host[32], port[32], user[32], pswd[32];
-        CG_GetVariable("ftp_fast_host", host, 32);
-        CG_GetVariable("ftp_fast_port", port, 32);
-        CG_GetVariable("ftp_fast_user", user, 32);
-        CG_GetVariable("ftp_fast_pswd", pswd, 32);
+        MG_Vars_GetVariable("ftp_fast_host", host, 32);
+        MG_Vars_GetVariable("ftp_fast_port", port, 32);
+        MG_Vars_GetVariable("ftp_fast_user", user, 32);
+        MG_Vars_GetVariable("ftp_fast_pswd", pswd, 32);
         System2_UploadFTPFile(ADD_OnFTPUploadCompleted_DL, path, remote, host, user, pswd, StringToInt(port));
     }
 }
@@ -393,10 +394,10 @@ public Action Timer_ReFTP(Handle timer, int type)
         Format(remote, 256, "/%s.bsp.bz2", downloadMap);
         
         char host[32], port[32], user[32], pswd[32];
-        CG_GetVariable("ftp_maps_host", host, 32);
-        CG_GetVariable("ftp_maps_port", port, 32);
-        CG_GetVariable("ftp_maps_user", user, 32);
-        CG_GetVariable("ftp_maps_pswd", pswd, 32);
+        MG_Vars_GetVariable("ftp_maps_host", host, 32);
+        MG_Vars_GetVariable("ftp_maps_port", port, 32);
+        MG_Vars_GetVariable("ftp_maps_user", user, 32);
+        MG_Vars_GetVariable("ftp_maps_pswd", pswd, 32);
         System2_UploadFTPFile(ADD_OnFTPUploadCompleted_CG, path, remote, host, user, pswd, StringToInt(port));
     }
     
@@ -417,10 +418,10 @@ public Action Timer_ReFTP(Handle timer, int type)
         }
 
         char host[32], port[32], user[32], pswd[32];
-        CG_GetVariable("ftp_fast_host", host, 32);
-        CG_GetVariable("ftp_fast_port", port, 32);
-        CG_GetVariable("ftp_fast_user", user, 32);
-        CG_GetVariable("ftp_fast_pswd", pswd, 32);
+        MG_Vars_GetVariable("ftp_fast_host", host, 32);
+        MG_Vars_GetVariable("ftp_fast_port", port, 32);
+        MG_Vars_GetVariable("ftp_fast_user", user, 32);
+        MG_Vars_GetVariable("ftp_fast_pswd", pswd, 32);
         System2_UploadFTPFile(ADD_OnFTPUploadCompleted_DL, path, remote, host, user, pswd, StringToInt(port));
     }
     
@@ -457,57 +458,57 @@ void InsertToDataBase()
     char m_szQuery[512], emap[128];
     
     SQL_EscapeString(g_hDatabase, downloadMap, emap, 128);
-    Format(m_szQuery, 512, "UPDATE map_request SET done = 1 WHERE type = '%s' and map = '%s'", serverType, emap);
-    CG_DatabaseSaveGames(m_szQuery);
+    Format(m_szQuery, 512, "UPDATE dxg_maprequest SET done = 1 WHERE type = '%s' and map = '%s'", serverType, emap);
+    MG_MySQL_SaveDatabase(m_szQuery);
     
     if(StrEqual(serverType, "tt"))
     {
-        Format(m_szQuery, 512, "INSERT INTO map_update VALUES (DEFAULT, 5, 0, '%s', 0)", emap);
-        CG_DatabaseSaveGames(m_szQuery);
+        Format(m_szQuery, 512, "INSERT INTO dxg_mapupdate VALUES (DEFAULT, 5, 0, '%s', 0)", emap);
+        MG_MySQL_SaveDatabase(m_szQuery);
         
-        Format(m_szQuery, 512, "INSERT INTO map_update VALUES (DEFAULT, 6, 0, '%s', 0)", emap);
-        CG_DatabaseSaveGames(m_szQuery);
+        Format(m_szQuery, 512, "INSERT INTO dxg_mapupdate VALUES (DEFAULT, 6, 0, '%s', 0)", emap);
+        MG_MySQL_SaveDatabase(m_szQuery);
     }
     else if(StrEqual(serverType, "ze"))
     {
-        Format(m_szQuery, 512, "INSERT INTO map_update VALUES (DEFAULT, 1, 0, '%s', 0)", emap);
-        CG_DatabaseSaveGames(m_szQuery);
+        Format(m_szQuery, 512, "INSERT INTO dxg_mapupdate VALUES (DEFAULT, 1, 0, '%s', 0)", emap);
+        MG_MySQL_SaveDatabase(m_szQuery);
         
-        Format(m_szQuery, 512, "INSERT INTO map_update VALUES (DEFAULT, 2, 0, '%s', 0)", emap);
-        CG_DatabaseSaveGames(m_szQuery);
+        Format(m_szQuery, 512, "INSERT INTO dxg_mapupdate VALUES (DEFAULT, 2, 0, '%s', 0)", emap);
+        MG_MySQL_SaveDatabase(m_szQuery);
         
-        Format(m_szQuery, 512, "INSERT INTO map_update VALUES (DEFAULT, 3, 0, '%s', 0)", emap);
+        Format(m_szQuery, 512, "INSERT INTO dxg_mapupdate VALUES (DEFAULT, 3, 0, '%s', 0)", emap);
         
-        Format(m_szQuery, 512, "INSERT INTO map_update VALUES (DEFAULT, 4, 0, '%s', 0)", emap);
-        CG_DatabaseSaveGames(m_szQuery);
+        Format(m_szQuery, 512, "INSERT INTO dxg_mapupdate VALUES (DEFAULT, 4, 0, '%s', 0)", emap);
+        MG_MySQL_SaveDatabase(m_szQuery);
     }
     else if(StrEqual(serverType, "mg"))
     {
-        Format(m_szQuery, 512, "INSERT INTO map_update VALUES (DEFAULT, 7, 0, '%s', 0)", emap);
-        CG_DatabaseSaveGames(m_szQuery);
+        Format(m_szQuery, 512, "INSERT INTO dxg_mapupdate VALUES (DEFAULT, 7, 0, '%s', 0)", emap);
+        MG_MySQL_SaveDatabase(m_szQuery);
     }
     else if(StrEqual(serverType, "jb"))
     {
-        Format(m_szQuery, 512, "INSERT INTO map_update VALUES (DEFAULT, 8, 0, '%s', 0)", emap);
-        CG_DatabaseSaveGames(m_szQuery);
+        Format(m_szQuery, 512, "INSERT INTO dxg_mapupdate VALUES (DEFAULT, 8, 0, '%s', 0)", emap);
+        MG_MySQL_SaveDatabase(m_szQuery);
         
-        Format(m_szQuery, 512, "INSERT INTO map_update VALUES (DEFAULT, 9, 0, '%s', 0)", emap);
-        CG_DatabaseSaveGames(m_szQuery);
+        Format(m_szQuery, 512, "INSERT INTO dxg_mapupdate VALUES (DEFAULT, 9, 0, '%s', 0)", emap);
+        MG_MySQL_SaveDatabase(m_szQuery);
     }
     else if(StrEqual(serverType, "hg"))
     {
-        Format(m_szQuery, 512, "INSERT INTO map_update VALUES (DEFAULT,11, 0, '%s', 0)", emap);
-        CG_DatabaseSaveGames(m_szQuery);
+        Format(m_szQuery, 512, "INSERT INTO dxg_mapupdate VALUES (DEFAULT,11, 0, '%s', 0)", emap);
+        MG_MySQL_SaveDatabase(m_szQuery);
     }
     else if(StrEqual(serverType, "ds"))
     {
-        Format(m_szQuery, 512, "INSERT INTO map_update VALUES (DEFAULT,12, 0, '%s', 0)", emap);
-        CG_DatabaseSaveGames(m_szQuery);
+        Format(m_szQuery, 512, "INSERT INTO dxg_mapupdate VALUES (DEFAULT,12, 0, '%s', 0)", emap);
+        MG_MySQL_SaveDatabase(m_szQuery);
     }
     else if(StrEqual(serverType, "kz"))
     {
-        Format(m_szQuery, 512, "INSERT INTO map_update VALUES (DEFAULT,15, 0, '%s', 0)", emap);
-        CG_DatabaseSaveGames(m_szQuery);
+        Format(m_szQuery, 512, "INSERT INTO dxg_mapupdate VALUES (DEFAULT,15, 0, '%s', 0)", emap);
+        MG_MySQL_SaveDatabase(m_szQuery);
     }
 
     ForceChangeLevel("de_dust2", "Reset");
