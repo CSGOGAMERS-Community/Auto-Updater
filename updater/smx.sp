@@ -146,7 +146,7 @@ void SMX_OnDatabaseAvailable(bool command = false)
         else if(FileExists(smxPath[plugin]))
             LogError("Get %s MD5 failed!", smxPath[plugin]);
         else
-            LogError("%s does not exists!", smxPath[plugin]);
+            LogMessage("%s does not exists!", smxPath[plugin]);
     }
 
     if(currentSmx > 0)

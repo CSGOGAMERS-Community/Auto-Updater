@@ -1,10 +1,13 @@
 void NAV_OnAllPluginLoaded()
 {
-    
+
 }
 
 void NAV_CheckMapNav(const char[] map)
 {
+    if(g_Game != Engine_CSGO)
+        return;
+
     char navpath[128];
     FormatEx(navpath, 256, "maps/%s.nav", map);
     if(FileExists(navpath))

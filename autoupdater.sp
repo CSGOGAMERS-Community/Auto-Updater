@@ -5,6 +5,7 @@
 #include <MagicGirl/vars>
 #include <system2>
 
+EngineVersion g_Game;
 Database g_hDatabase;
 bool testServer;
 
@@ -16,10 +17,10 @@ bool testServer;
 
 public Plugin myinfo = 
 {
-    name        = "[DARLING in the FRANXX] - Auto Updater",
+    name        = "Auto Updater",
     author      = "Kyle",
     description = "an auto update system",
-    version     = "1.9.<commit_count>.<commit_branch> - <commit_date>",
+    version     = "2.0.<commit_count>.<commit_branch> - <commit_date>",
     url         = "https://02.ditf.moe"
 };
 
@@ -40,6 +41,9 @@ void OnDatabaseAvailable()
         return;
     }
     
+    if(g_Game != Engine_CSGO)
+        return;
+
     char m_szQuery[128];
     FormatEx(m_szQuery, 128, "SELECT `map` FROM dxg_mapdb WHERE `mod` = '%d'", MG_Core_GetServerModId());
     g_hDatabase.Query(SQLCallback_CheckMap, m_szQuery);
@@ -48,6 +52,8 @@ void OnDatabaseAvailable()
 
 public void OnAllPluginsLoaded()
 {
+    g_Game = GetEngineVersion();
+
     char szPath[128];
     BuildPath(Path_SM, szPath, 128, "data/download");
     if(!DirExists(szPath))

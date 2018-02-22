@@ -6,6 +6,9 @@ bool isBigMap;
 
 void ADD_OnAllPluginLoaded()
 {
+    if(g_Game != Engine_CSGO)
+        return;
+
     RegAdminCmd("sm_updateadd", Command_UpdaterADD, ADMFLAG_BAN);
 
     if(FindPluginByFile("shop-core.smx"))
@@ -18,7 +21,7 @@ void ADD_OnAllPluginLoaded()
 
     testServer = true;
 
-    CreateTimer(300.0, Timer_CheckAddMap, _, TIMER_REPEAT);
+    CreateTimer(1800.0, Timer_CheckAddMap, _, TIMER_REPEAT);
 }
 
 // Admin command

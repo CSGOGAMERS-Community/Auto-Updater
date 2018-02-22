@@ -3,6 +3,9 @@ char currentUrl[256];
 
 void MAP_OnAllPluginLoaded()
 {
+    if(g_Game != Engine_CSGO)
+        return;
+
     RegAdminCmd("sm_updatemap", Command_UpdateMap, ADMFLAG_BAN);
     RegAdminCmd("sm_deletemap", Command_DeleteMap, ADMFLAG_BAN);
     CreateTimer(1800.0, Timer_CheckUpdateMap, _, TIMER_REPEAT);
@@ -15,7 +18,7 @@ public void SQLCallback_CheckMap(Database db, DBResultSet results, const char[] 
         LogError("Can not get map list from database :  %s", error);
         return;
     }
-    
+
     if(results.RowCount < 1)
     {
         LogMessage("Can not get map list from database! Now inserting!");
@@ -292,6 +295,9 @@ public Action Command_UpdateMap(int client, int args)
 public Action Command_DeleteMap(int client, int args)
 {
     if(!client)
+        return Plugin_Handled;
+    
+    if(g_Game != Engine_CSGO)
         return Plugin_Handled;
 
     char auth[32];

@@ -3,6 +3,9 @@ char nextMap[128];
 
 void CFG_OnAllPluginLoaded()
 {
+    if(g_Game != Engine_CSGO)
+        return;
+    
     RegAdminCmd("sm_updatecfg", Command_UpdaterCFG, ADMFLAG_BAN);
     
     if(FindPluginByFile("zombiereloaded.smx"))
