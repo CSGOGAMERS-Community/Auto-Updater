@@ -9,10 +9,10 @@ void ADD_OnAllPluginLoaded()
     if(g_Game != Engine_CSGO)
         return;
 
-    RegAdminCmd("sm_updateadd", Command_UpdaterADD, ADMFLAG_BAN);
-
     if(FindPluginByFile("shop-core.smx"))
         return;
+    
+    RegAdminCmd("sm_updateadd", Command_UpdaterADD, ADMFLAG_BAN);
 
     char szPath[128];
     BuildPath(Path_SM, szPath, 128, "data/download/add/");

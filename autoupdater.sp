@@ -68,11 +68,6 @@ public void OnAllPluginsLoaded()
     ADD_OnAllPluginLoaded();
 }
 
-public void MG_MySQL_OnConnected(Database mysql)
-{
-    g_hDatabase = mysql;
-}
- 
 void CheckDatabase()
 {
     g_hDatabase = MG_MySQL_GetDatabase();
