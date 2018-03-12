@@ -17,7 +17,9 @@ enum ePlugin
     pl_MCR_mcr,
     pl_MCR_rtv,
     pl_MCR_nmt,
-    pl_MCR_ext
+    pl_MCR_ext,
+    pl_MG_Core,
+    pl_MG_CP
 }
 
 static char smxPath[ePlugin][128] =
@@ -35,7 +37,9 @@ static char smxPath[ePlugin][128] =
     "addons/sourcemod/plugins/mapchooser_redux.smx",
     "addons/sourcemod/plugins/rockthevote_redux.smx",
     "addons/sourcemod/plugins/nominations_redux.smx",
-    "addons/sourcemod/plugins/maptimelimit_redux.smx"
+    "addons/sourcemod/plugins/maptimelimit_redux.smx",
+    "addons/sourcemod/plugins/MiniGames.smx",
+    "addons/sourcemod/plugins/cheater-punisher.smx"
 };
 
 static char smxDLPath[ePlugin][128] =
@@ -53,7 +57,9 @@ static char smxDLPath[ePlugin][128] =
     "addons/sourcemod/data/download/mapchooser_redux.smx",
     "addons/sourcemod/data/download/rockthevote_redux.smx",
     "addons/sourcemod/data/download/nominations_redux.smx",
-    "addons/sourcemod/data/download/maptimelimit_redux.smx"
+    "addons/sourcemod/data/download/maptimelimit_redux.smx",
+    "addons/sourcemod/data/download/MiniGames.smx",
+    "addons/sourcemod/data/download/cheater-punisher.smx"
 };
 
 static char smxShort[ePlugin][32] =
@@ -71,7 +77,9 @@ static char smxShort[ePlugin][32] =
     "Mapchooser Redux",
     "Rock the Vote Redux",
     "Nominations Redux",
-    "Maptime Extend Redux"
+    "Maptime Extend Redux",
+    "MiniGames - Core",
+    "MiniGames - Cheater Punisher"
 };
 
 static char smxFile[ePlugin][32] =
@@ -89,7 +97,9 @@ static char smxFile[ePlugin][32] =
     "mapchooser_redux.smx",
     "rockthevote_redux.smx",
     "nominations_redux.smx",
-    "maptimelimit_redux.smx"
+    "maptimelimit_redux.smx",
+    "MiniGames.smx",
+    "cheater-punisher.smx"
 };
 
 static int smxId[ePlugin] = 
@@ -107,7 +117,9 @@ static int smxId[ePlugin] =
     301,
     302,
     303,
-    304
+    304,
+    501,
+    502
 };
 
 void SMX_OnAllPluginLoaded()
@@ -144,9 +156,9 @@ void SMX_OnDatabaseAvailable(bool command = false)
             System2_DownloadFile(SMX_OnDownloadSmxCompleted, url, smxDLPath[plugin], plugin);
         }
         else if(FileExists(smxPath[plugin]))
-            LogError("Get %s MD5 failed!", smxPath[plugin]);
+            LogError("Get [%s] MD5 failed!", smxPath[plugin]);
         else
-            LogMessage("%s does not exists!", smxPath[plugin]);
+            LogMessage("[%s] does not exists!", smxPath[plugin]);
     }
 
     if(currentSmx > 0)
@@ -170,14 +182,14 @@ public void SMX_OnDownloadSmxCompleted(bool finished, const char[] error, float 
                 Handle file = OpenFile(smxDLPath[plugin], "r");
                 ReadFileString(file, content, 128, -1);
                 CloseHandle(file);
-                PrintToServer("%s is checked -> %s", smxShort[plugin], content);
+                PrintToServer("[%s] is checked -> %s", smxShort[plugin], content);
             }
             else
             {
                 Success = true;
                 DeleteFile(smxPath[plugin]);
                 RenameFile(smxPath[plugin], smxDLPath[plugin]);
-                LogMessage("%s update successful -> size: %d", smxShort[plugin], FileSize(smxPath[plugin]));
+                LogMessage("[%s] update successful -> size: %d bytes", smxShort[plugin], FileSize(smxPath[plugin]));
             }
             DeleteFile(smxDLPath[plugin]);
         }
