@@ -15,18 +15,18 @@ public void SQLCallback_CheckMap(Database db, DBResultSet results, const char[] 
 {
     if(results == null || error[0])
     {
-        LogError("Can not get map list from database :  %s", error);
+        LogMessageEx("Can not get map list from database :  %s", error);
         return;
     }
 
     if(results.RowCount < 1)
     {
-        LogMessage("Can not get map list from database! Now inserting!");
+        LogMessageEx("Can not get map list from database! Now inserting!");
         InsertMapsToDatabase();
         return;
     }
 
-    LogMessage("Syncing Map from database!");
+    LogMessageEx("Syncing Map from database!");
 
     char map[128];
 
@@ -73,10 +73,10 @@ void InsertMapsToDatabase()
                 SQL_EscapeString(g_hDatabase, filename, m_szMap, 128);
                 FormatEx(m_szQuery, 256, "INSERT INTO dxg_mapdb VALUES ('%d', '%s', '%s');", MG_Core_GetServerModId(), m_szMap, crc32);
                 MG_MySQL_SaveDatabase(m_szQuery);
-                LogMessage("Insert %s to database.", filename);
+                LogMessageEx("Insert %s to database.", filename);
             }
             else
-                LogError("Get %s CRC32 failed!", path);
+                LogMessageEx("Get %s CRC32 failed!", path);
         }
         CloseHandle(hDirectory);
     }
@@ -113,11 +113,11 @@ void CheckMapsOnStart(ArrayList array_mapmysql)
         
         char bsp[128];
         FormatEx(bsp, 128, "maps/%s.bsp", map);
-        LogMessage("Delete %s %s!", bsp, DeleteFile(bsp) ? "successful" : "failed");
+        LogMessageEx("Delete %s %s!", bsp, DeleteFile(bsp) ? "successful" : "failed");
 
         char nav[128];
         FormatEx(nav, 128, "maps/%s.nav", map);
-        LogMessage("Delete %s %s!", nav, DeleteFile(nav) ? "successful" : "failed");
+        LogMessageEx("Delete %s %s!", nav, DeleteFile(nav) ? "successful" : "failed");
 
         deleted = true;
     }
@@ -163,7 +163,7 @@ public void SQLCallback_GetNewMap(Database db, DBResultSet results, const char[]
 {
     if(results == null || error[0])
     {
-        LogError("Checking new map list failed: %s", error);
+        LogMessageEx("Checking new map list failed: %s", error);
         return;
     }
     
@@ -199,7 +199,7 @@ public void MAP_OnDownloadMapCompleted(bool finished, const char[] error, float 
     {
         if(!StrEqual(error, ""))
         {
-            LogError("Download %s.bsp.bz2 form %s failed: %s", currentMap, currentUrl, error);
+            LogMessageEx("Download %s.bsp.bz2 form %s failed: %s", currentMap, currentUrl, error);
             char path[256];
             FormatEx(path, 256, "addons/sourcemod/data/download/%s.bsp.bz2", currentMap);
             DeleteFile(path);
@@ -234,7 +234,7 @@ public void MAP_OnBz2ExtractCompleted(const char[] output, const int size, CMDRe
     }
     else if(status == CMD_ERROR)
     {
-        LogError("Bz2 Extract addons/sourcemod/data/download/%s.bsp.bz2 failed: \n%s", currentMap, output);
+        LogMessageEx("Bz2 Extract addons/sourcemod/data/download/%s.bsp.bz2 failed: \n%s", currentMap, output);
 
         char path[256];
         FormatEx(path, 256, "addons/sourcemod/data/download/%s.bsp.bz2", currentMap);
@@ -254,18 +254,18 @@ public void MAP_OnMapCopyCompleted(bool success, const char[] from, const char[]
         if(!IsMapValid(currentMap))
         {
             DeleteFile(to);
-            LogError("Validate %s failed!",  currentMap);
+            LogMessageEx("Validate %s failed!",  currentMap);
         }
 
         char del[256];
 
         FormatEx(del, 256, "addons/sourcemod/data/download/%s.bsp.bz2", currentMap);
         if(!DeleteFile(del))
-            LogError("Delete %s failed.",  del);
+            LogMessageEx("Delete %s failed.",  del);
 
         FormatEx(del, 256, "addons/sourcemod/data/download/%s.bsp", currentMap);
         if(!DeleteFile(del))
-            LogError("Delete %s failed.",  del);
+            LogMessageEx("Delete %s failed.",  del);
         
         UpdateMapStatus();
         CheckingNewMap();

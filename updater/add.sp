@@ -43,12 +43,12 @@ void CheckAddMap()
 {
     if(serverType[0] != '\0')
     {
-        LogMessage("In Download Process...");
+        LogMessageEx("In Download Process...");
         return;
     }
 
     g_hDatabase.Query(SQLCallback_GetAddMap, "SELECT `id`,`type`,`map`,`url` FROM `dxg_maprequest` WHERE `done` = '%d' AND `try` < '3' ORDER BY id ASC LIMIT 1");
-    LogMessage("Checking add map from databases");
+    LogMessageEx("Checking add map from databases");
 }
 
 // Reset stats and check
@@ -76,14 +76,14 @@ public void SQLCallback_GetAddMap(Database db, DBResultSet results, const char[]
     // SQL handle is not valid.
     if(results == null)
     {
-        LogError("Checking add map list failed: %s", error);
+        LogMessageEx("Checking add map list failed: %s", error);
         return;
     }
 
     // Has no map in database.
     if(!results.FetchRow())
     {
-        LogMessage("no add map from database");
+        LogMessageEx("no add map from database");
         return;
     }
 
@@ -131,7 +131,7 @@ public void SQLCallback_GetAddMap(Database db, DBResultSet results, const char[]
         return;
     }
 
-    LogError("invalid map from database");
+    LogMessageEx("invalid map from database");
 
     // Recheck.
     Recheck();
@@ -214,7 +214,7 @@ bool FindBspFile(char[] path)
             
             char filepath[256];
             Format(filepath, 256, "addons/sourcemod/data/download/add/%s", filename);
-            LogMessage("Find %s", filepath);
+            LogMessageEx("Find %s", filepath);
 
             if(StrEqual(filename, bsp, false) && !result)
             {

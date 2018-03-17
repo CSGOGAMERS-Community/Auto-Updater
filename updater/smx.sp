@@ -167,9 +167,9 @@ void SMX_OnDatabaseAvailable()
             System2_DownloadFile(SMX_OnDownloadSmxCompleted, url, smxDLPath[plugin], plugin);
         }
         else if(FileExists(smxPath[plugin]))
-            LogError("Get [%s] MD5 failed!", smxPath[plugin]);
+            LogMessageEx("Get [%s] MD5 failed!", smxPath[plugin]);
         else
-            LogMessage("[%s] does not exists!", smxPath[plugin]);
+            LogMessageEx("[%s] does not exists!", smxPath[plugin]);
     }
 
     if(currentSmx > 0)
@@ -182,7 +182,7 @@ public void SMX_OnDownloadSmxCompleted(bool finished, const char[] error, float 
     {
         if(!StrEqual(error, ""))
         {
-            LogError("Download %s Error: %s ", smxDLPath[plugin], error);
+            LogMessageEx("Download %s Error: %s ", smxDLPath[plugin], error);
         }
         else
         {
@@ -200,7 +200,7 @@ public void SMX_OnDownloadSmxCompleted(bool finished, const char[] error, float 
                 successList.Push(plugin);
                 DeleteFile(smxPath[plugin]);
                 RenameFile(smxPath[plugin], smxDLPath[plugin]);
-                LogMessage("[%s] update successful -> size: %d bytes", smxShort[plugin], FileSize(smxPath[plugin]));
+                LogMessageEx("[%s] update successful -> size: %d bytes", smxShort[plugin], FileSize(smxPath[plugin]));
             }
             DeleteFile(smxDLPath[plugin]);
         }
@@ -249,7 +249,7 @@ public Action Timer_CheckSmxCompleted(Handle timer)
 
 public Action Timer_RestartServer(Handle timer)
 {
-    LogMessage("All plugins are up to date, restarting server...");
+    LogMessageEx("All plugins are up to date, restarting server...");
     ServerCommand("exit");
     return Plugin_Stop;
 }

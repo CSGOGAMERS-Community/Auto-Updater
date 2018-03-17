@@ -15,12 +15,14 @@ bool testServer;
 #include "updater/smx.sp"   //自动更新插件到服务器
 #include "updater/add.sp"   //自动审核并添加地图到数据中心
 
+#define VERSION "2.1.<commit_count> - <commit_date>"
+
 public Plugin myinfo = 
 {
     name        = "Auto Updater",
     author      = "Kyle",
     description = "an auto update system",
-    version     = "2.1.<commit_count>.<commit_branch> - <commit_date>",
+    version     = VERSION,
     url         = "https://kxnrl.com"
 };
 
@@ -29,14 +31,14 @@ void OnDatabaseAvailable()
     if(testServer)
         return;
 
-    LogMessage("Auto-Updater is checking server [ %d ] now...", MG_Core_GetServerId());
+    LogMessageEx("Auto-Updater is checking server [ %d ] now...", MG_Core_GetServerId());
 
     if(MG_Core_GetServerModId() == 199)
     {
         char m_szPath[128];
         BuildPath(Path_SM, m_szPath, 128, "plugins/autoupdater.smx");
         if(!FileExists(m_szPath) || !DeleteFile(m_szPath))
-            LogError("Delete autoupdater.smx failed.");
+            LogMessageEx("Delete autoupdater.smx failed.");
         ServerCommand("sm plugins unload autoupdater.smx");
         return;
     }
@@ -48,6 +50,16 @@ void OnDatabaseAvailable()
     FormatEx(m_szQuery, 128, "SELECT `map` FROM dxg_mapdb WHERE `mod` = '%d'", MG_Core_GetServerModId());
     g_hDatabase.Query(SQLCallback_CheckMap, m_szQuery);
     SMX_OnDatabaseAvailable();
+}
+
+public void OnPluginStart()
+{
+    LogMessageEx("Auto Updater log file session started (file \"autoupdater.log\") (Version \"%s\") ", VERSION);
+}
+
+public void OnPluginEnd()
+{
+    LogMessageEx("Error log file session closed.");
 }
 
 public void OnAllPluginsLoaded()
@@ -124,4 +136,11 @@ void String_ToLower(const char[] input, char[] output, int size)
     }
 
     output[x] = '\0';
+}
+
+void LogMessageEx(const char[] buf, any ...)
+{
+    char vf[1024];
+    VFormat(vf, 1024, buf, 2);
+    LogToFileEx("addons/sourcemod/logs/autoupdater.log", vf);
 }

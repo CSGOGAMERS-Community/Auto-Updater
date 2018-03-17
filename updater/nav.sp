@@ -22,7 +22,7 @@ void NAV_CheckMapNav(const char[] map)
     ResetPack(pack);
     System2_DownloadFile(NAV_OnDownloadNAVCompleted, url, dwlpath, pack);
     
-    LogMessage("NAV -> %s -> %s", map, url);
+    LogMessageEx("NAV -> %s -> %s", map, url);
 }
 
 public void NAV_OnDownloadNAVCompleted(bool finished, const char[] error, float dltotal, float dlnow, float ultotal, float ulnow, Handle pack)
@@ -40,7 +40,7 @@ public void NAV_OnDownloadNAVCompleted(bool finished, const char[] error, float 
 
     if(!StrEqual(error, ""))
     {
-        LogError("Download %s.nav.bz2 failed: %s", map, error);
+        LogMessageEx("Download %s.nav.bz2 failed: %s", map, error);
         DeleteFile(dwlpath);
         return;
     }

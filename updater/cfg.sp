@@ -65,10 +65,10 @@ public void CFG_OnTransCompleted(bool finished, const char[] error, float dltota
             if(StrContains(error, "Connection timed out after", false) == 0)
             {
                 CFG_GetTrans();
-                LogError("Download Translation[%s] Error: %s => Try again", nextMap, error);
+                LogMessageEx("Download Translation[%s] Error: %s => Try again", nextMap, error);
             }
             else if(!StrEqual(error, ""))
-                LogError("Download Translation[%s] Error: %s", nextMap, error);
+                LogMessageEx("Download Translation[%s] Error: %s", nextMap, error);
 
             return;
         }
@@ -105,7 +105,7 @@ public void CFG_OnConfsCompleted(bool finished, const char[] error, float dltota
         if(FileSize(newFile) <= 32)
         {
             DeleteFile(newFile);
-            LogError("Download Config[%s] Return: 404 -> need update config on GitHub", nextMap);
+            LogMessageEx("Download Config[%s] Return: 404 -> need update config on GitHub", nextMap);
             return;
         }
 
@@ -116,10 +116,10 @@ public void CFG_OnConfsCompleted(bool finished, const char[] error, float dltota
             if(StrContains(error, "Connection timed out after", false) == 0)
             {
                 CFG_GetConfs();
-                LogError("Download Config[%s] Error: %s => Try again", nextMap, error);
+                LogMessageEx("Download Config[%s] Error: %s => Try again", nextMap, error);
             }
             else if(!StrEqual(error, ""))
-                LogError("Download Config[%s] Error: %s", nextMap, error);
+                LogMessageEx("Download Config[%s] Error: %s", nextMap, error);
 
             return;
         }
@@ -170,10 +170,10 @@ public void CFG_OnStripCompleted(bool finished, const char[] error, float dltota
             if(StrContains(error, "Connection timed out after", false) == 0)
             {
                 CFG_GetConfs();
-                LogError("Download Stripper Config[%s] Error: %s => Try again", nextMap, error);
+                LogMessageEx("Download Stripper Config[%s] Error: %s => Try again", nextMap, error);
             }
             else if(!StrEqual(error, ""))
-                LogError("Download Stripper Config[%s] Error: %s", nextMap, error);
+                LogMessageEx("Download Stripper Config[%s] Error: %s", nextMap, error);
 
             return;
         }
@@ -222,10 +222,10 @@ public void CFG_OnWatchCompleted(bool finished, const char[] error, float dltota
             if(StrContains(error, "Connection timed out after", false) == 0)
             {
                 CFG_GetConfs();
-                LogError("Download entWatch Config[%s] Error: %s => Try again", nextMap, error);
+                LogMessageEx("Download entWatch Config[%s] Error: %s => Try again", nextMap, error);
             }
             else if(!StrEqual(error, ""))
-                LogError("Download entWatch Config[%s] Error: %s", nextMap, error);
+                LogMessageEx("Download entWatch Config[%s] Error: %s", nextMap, error);
 
             return;
         }
