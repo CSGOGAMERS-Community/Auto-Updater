@@ -20,8 +20,8 @@ public Plugin myinfo =
     name        = "Auto Updater",
     author      = "Kyle",
     description = "an auto update system",
-    version     = "2.0.<commit_count>.<commit_branch> - <commit_date>",
-    url         = "https://02.ditf.moe"
+    version     = "2.1.<commit_count>.<commit_branch> - <commit_date>",
+    url         = "https://kxnrl.com"
 };
 
 void OnDatabaseAvailable()

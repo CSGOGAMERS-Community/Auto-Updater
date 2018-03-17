@@ -1,6 +1,6 @@
-bool Checked;
-bool Success;
+bool Checking;
 int currentSmx;
+ArrayList successList;
 
 enum ePlugin
 {
@@ -125,21 +125,32 @@ static int smxId[ePlugin] =
 void SMX_OnAllPluginLoaded()
 {
     RegAdminCmd("sm_updatesmx", Command_UpdateSmx, ADMFLAG_ROOT);
+    
+    successList = new ArrayList();
+    
+    CreateTimer(7200.0, Timer_UpdatePlugin, _, TIMER_REPEAT);
+}
+
+public Action Timer_UpdatePlugin(Handle timer)
+{
+    SMX_OnDatabaseAvailable();
+    return Plugin_Handled;
 }
 
 public Action Command_UpdateSmx(int client, int args)
 {
-    SMX_OnDatabaseAvailable(true);
+    SMX_OnDatabaseAvailable();
     return Plugin_Handled;
 }
 
-void SMX_OnDatabaseAvailable(bool command = false)
+void SMX_OnDatabaseAvailable()
 {
-    if(Checked && !command)
+    if(Checking)
         return;
-    
-    Checked = true;
-    
+
+    Checking = true;
+    successList.Clear();
+
     char md5[33], url[192];
     ePlugin plugin;
 
@@ -186,7 +197,7 @@ public void SMX_OnDownloadSmxCompleted(bool finished, const char[] error, float 
             }
             else
             {
-                Success = true;
+                successList.Push(plugin);
                 DeleteFile(smxPath[plugin]);
                 RenameFile(smxPath[plugin], smxDLPath[plugin]);
                 LogMessage("[%s] update successful -> size: %d bytes", smxShort[plugin], FileSize(smxPath[plugin]));
@@ -205,12 +216,40 @@ public Action Timer_CheckSmxCompleted(Handle timer)
         PrintToServer("Wating for download threads...  [threads: %d  | times: %d]", currentSmx, ++times);
         return Plugin_Continue;
     }
+    
+    Checking = false;
 
-    if(!Success)
+    if(successList.Length == 0)
         return Plugin_Stop;
 
+    bool restart = false;
+    for(int i = 0; i < successList.Length; ++i)
+    {
+        ePlugin plugin = successList.Get(i);
+        if(plugin == pl_Core_main || plugin == pl_Shop_core)
+        {
+            restart = true;
+            break;
+        }
+    }
+
+    if(restart)
+    {
+        CreateTimer(0.5, Timer_RestartServer);
+        for(int client = 1; client <= MaxClients; ++client)
+            if(IsClientConnected(client))
+                KickClient(client, "服务器核心模块更新完毕,\n正在重新启动服务器.\n请重新连接服务器!");
+    }
+    else
+        for(int i = 0; i < successList.Length; ++i)
+            ServerCommand("sm plugins reload %s", smxFile[successList.Get(i)]);
+
+    return Plugin_Stop;
+}
+
+public Action Timer_RestartServer(Handle timer)
+{
     LogMessage("All plugins are up to date, restarting server...");
     ServerCommand("exit");
-
     return Plugin_Stop;
 }
