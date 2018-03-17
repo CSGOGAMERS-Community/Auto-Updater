@@ -71,13 +71,13 @@ public void OnAllPluginsLoaded()
     if(!DirExists(szPath))
         CreateDirectory(szPath, 511);
 
-    CheckDatabase();
-
     CFG_OnAllPluginLoaded();
     SMX_OnAllPluginLoaded();
     NAV_OnAllPluginLoaded();
     MAP_OnAllPluginLoaded();
     ADD_OnAllPluginLoaded();
+    
+    CheckDatabase();
 }
 
 void CheckDatabase()
