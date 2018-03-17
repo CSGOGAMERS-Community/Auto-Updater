@@ -31,7 +31,7 @@ void OnDatabaseAvailable()
     if(testServer)
         return;
 
-    LogMessageEx("Auto-Updater is checking server [ %d ] now...", MG_Core_GetServerId());
+    LogMessageEx("Checking server [ %d ] now...", MG_Core_GetServerId());
 
     if(MG_Core_GetServerModId() == 199)
     {
@@ -59,7 +59,7 @@ public void OnPluginStart()
 
 public void OnPluginEnd()
 {
-    LogMessageEx("Error log file session closed.");
+    LogMessageEx("Auto Updater log file session closed.");
 }
 
 public void OnAllPluginsLoaded()

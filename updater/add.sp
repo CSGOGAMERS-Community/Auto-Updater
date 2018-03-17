@@ -83,7 +83,7 @@ public void SQLCallback_GetAddMap(Database db, DBResultSet results, const char[]
     // Has no map in database.
     if(!results.FetchRow())
     {
-        LogMessageEx("no add map from database");
+        LogMessageEx("No map in request pool.");
         return;
     }
 
@@ -131,7 +131,7 @@ public void SQLCallback_GetAddMap(Database db, DBResultSet results, const char[]
         return;
     }
 
-    LogMessageEx("invalid map from database");
+    LogMessageEx("Map from database is not valid");
 
     // Recheck.
     Recheck();

@@ -22,7 +22,7 @@ void NAV_CheckMapNav(const char[] map)
     ResetPack(pack);
     System2_DownloadFile(NAV_OnDownloadNAVCompleted, url, dwlpath, pack);
     
-    LogMessageEx("NAV -> %s -> %s", map, url);
+    LogMessageEx("Downloading nav -> %s -> %s", map, url);
 }
 
 public void NAV_OnDownloadNAVCompleted(bool finished, const char[] error, float dltotal, float dlnow, float ultotal, float ulnow, Handle pack)

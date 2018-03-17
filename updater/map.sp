@@ -15,13 +15,13 @@ public void SQLCallback_CheckMap(Database db, DBResultSet results, const char[] 
 {
     if(results == null || error[0])
     {
-        LogMessageEx("Can not get map list from database :  %s", error);
+        LogMessageEx("load map list from database failed:  %s", error);
         return;
     }
 
     if(results.RowCount < 1)
     {
-        LogMessageEx("Can not get map list from database! Now inserting!");
+        LogMessageEx("map list from database is null! Now inserting!");
         InsertMapsToDatabase();
         return;
     }
@@ -43,6 +43,8 @@ public void SQLCallback_CheckMap(Database db, DBResultSet results, const char[] 
         CheckMapsOnDelete(array_mapmysql, startCheck);
 
     delete array_mapmysql;
+    
+    LogMessageEx("Map list has been synced");
 }
 
 void InsertMapsToDatabase()
@@ -73,7 +75,7 @@ void InsertMapsToDatabase()
                 SQL_EscapeString(g_hDatabase, filename, m_szMap, 128);
                 FormatEx(m_szQuery, 256, "INSERT INTO dxg_mapdb VALUES ('%d', '%s', '%s');", MG_Core_GetServerModId(), m_szMap, crc32);
                 MG_MySQL_SaveDatabase(m_szQuery);
-                LogMessageEx("Insert %s to database.", filename);
+                LogMessageEx("Insert %s to database -> CRC[%s]", filename, crc32);
             }
             else
                 LogMessageEx("Get %s CRC32 failed!", path);

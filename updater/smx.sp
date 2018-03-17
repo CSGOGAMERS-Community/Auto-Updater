@@ -168,8 +168,6 @@ void SMX_OnDatabaseAvailable()
         }
         else if(FileExists(smxPath[plugin]))
             LogMessageEx("Get [%s] MD5 failed!", smxPath[plugin]);
-        else
-            LogMessageEx("[%s] does not exists!", smxPath[plugin]);
     }
 
     if(currentSmx > 0)
@@ -200,7 +198,7 @@ public void SMX_OnDownloadSmxCompleted(bool finished, const char[] error, float 
                 successList.Push(plugin);
                 DeleteFile(smxPath[plugin]);
                 RenameFile(smxPath[plugin], smxDLPath[plugin]);
-                LogMessageEx("[%s] update successful -> size: %d bytes", smxShort[plugin], FileSize(smxPath[plugin]));
+                LogMessageEx("update [%s] successful -> size: %d bytes", smxShort[plugin], FileSize(smxPath[plugin]));
             }
             DeleteFile(smxDLPath[plugin]);
         }
