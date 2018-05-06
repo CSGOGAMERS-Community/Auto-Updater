@@ -15,7 +15,7 @@ void NAV_CheckMapNav(const char[] map)
 
     char url[256], dwlpath[256];
     FormatEx(dwlpath, 256, "addons/sourcemod/data/download/%s.nav", map);
-    FormatEx(url, 256, "https://static.csgogamers.com/navdownloader/unbz2.php?nav=%s", map);
+    FormatEx(url, 256, "http://static.csgogamers.com/navdownloader/unbz2.php?nav=%s", map);
 
     Handle pack = CreateDataPack();
     WritePackString(pack, map);

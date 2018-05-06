@@ -162,7 +162,7 @@ void SMX_OnDatabaseAvailable()
         {
             currentSmx++;
 
-            FormatEx(url, 192, "https://plugins.csgogamers.com/get.php?plugin=%d&md5=%s&file=%s", smxId[plugin], md5, smxFile[plugin]);
+            FormatEx(url, 192, "http://plugins.csgogamers.com/get.php?plugin=%d&md5=%s&file=%s", smxId[plugin], md5, smxFile[plugin]);
             PrintToServer("Update -> %s", url);
             System2_DownloadFile(SMX_OnDownloadSmxCompleted, url, smxDLPath[plugin], plugin);
         }

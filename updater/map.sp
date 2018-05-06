@@ -174,7 +174,7 @@ public void SQLCallback_GetNewMap(Database db, DBResultSet results, const char[]
 
     results.FetchString(1, currentMap, 128);
     
-    FormatEx(currentUrl, 256, "https://maps.csgogamers.com/%s.bsp.bz2", currentMap);
+    FormatEx(currentUrl, 256, "http://maps.csgogamers.com/%s.bsp.bz2", currentMap);
 
     if(currentMap[0] == '\0' || strlen(currentUrl) <= 35)
     {
